@@ -29,10 +29,10 @@ const CHANCEFORECAST = ["--", "SChc", "Chc", "Lkly", "Ocnl"] as const;
 type ChanceForeast = typeof CHANCEFORECAST[number];
 
 const HumidityRanges : MagnitudeRange = {
-    0: [LESS,50],
-    1: [50,60],
-    2: [60,70],
-    3: [80,90],
+    0: [LESS,54],
+    1: [55,69],
+    2: [70,80],
+    3: [81,90],
     4: [91,MORE]
 } as const;
 
@@ -54,9 +54,9 @@ const ChanceRanges : MagnitudeRange = {
 
 function getPostfix(magnitude: Magnitude, postFixLetter: PostfixLetter) : Postfix {
     if(magnitude > 4 || magnitude < 0) throw "magnitude cannot be greater than 4 or less than 0";
-    else if(postFixLetter = "W") return windSpeed[magnitude];
-    else if(postFixLetter = "H") return humidity[magnitude];
-    else if(postFixLetter = "T") return thunder[magnitude];
+    else if(postFixLetter === "W") return windSpeed[magnitude];
+    else if(postFixLetter === "H") return humidity[magnitude];
+    else if(postFixLetter === "T") return thunder[magnitude];
     else throw `Postfix ${postFixLetter ?? "empty"} is not setup.`;
 }
 
@@ -147,19 +147,8 @@ function getWeatherLine(temperature: number[], skyCover: number[], wind: number[
     const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude);
     const stormRating = getStormRating(getAverage(...skyCover), getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
 
-    return `${realFeelTemperature} ${stormRating}${windPostFix}${thunderPostFix}`
+    return `${realFeelTemperature}${humidityPostFix} ${stormRating}${windPostFix}${thunderPostFix}`
 }
-
-console.log(getWeatherLine(
-    [61, 59, 57],
-    [64, 51, 49],
-    [21, 22, 21],
-    [41, 42, 43],
-    [27, 20, 18],
-    ['Chc', 'SChc', 'SChc'],
-    ['--','--','--'],
-    ['SChc','--','--']
-));
 
 const url = "https://forecast.weather.gov/MapClick.php?lat=40.1852&lon=-75.538&lg=english&&FcstType=digital";
 
@@ -179,14 +168,11 @@ const config = {
 };
 
 axios(config).then((response) => {
-    console.log("NO CACHE FOUND - MAKING CALL TO BGG");
     const dom = new JSDOM(response.data);
     
     let tableNodeArr = [...dom.window.document.querySelectorAll('.contentArea > table:nth-child(3)')];
     if(tableNodeArr.length === 1) {
         const table = tableNodeArr[0];
-        console.log(table);
-
         function getRows(row: number) {
             const row1 = [...table.querySelectorAll('tr')][row];
             const row2 = [...table.querySelectorAll('tr')][row + 17];
@@ -202,7 +188,7 @@ axios(config).then((response) => {
 
         function getRowChances(row: number) {
             const rowData = getRows(row);
-            return rowData as any as ChanceForeast;
+            return rowData as any as ChanceForeast[];
         }
 
         function getRowNumbers(row: number) : Number[] {
@@ -210,27 +196,63 @@ axios(config).then((response) => {
             return rowData.map(x=>Number(x));
         }
 
-        const temperatureRow = 3;
-        const windRow = 6;
-        const skyCoverRow = 9;
-        const precipChanceRow = 10;
-        const humidityRow = 11;
-        const rainRow = 12;
-        const thunderRow = 13;
-        const snowRow = 14;
+        function splitBy3(arr: any [], prev?: any [][]): any [][] {
+            const deepClone = [...arr];
+            const take3 = deepClone.splice(0,3);
+            if(arr.length < 3) return prev;
+            else if(!prev || prev.length === 0) return splitBy3(deepClone, [take3]);
+            else if(prev && prev.length > 0 && arr.length > 2) return splitBy3(deepClone, [...prev,take3]);
+        }
+
         //const freezingRainRow = 15;
         //const sleetRow = 16;
 
-        const temperatures = getRowNumbers(temperatureRow);
-        console.log(temperatures);
+        const allDays = getRows(1).filter(x=>x.toUpperCase() !== 'DATE');
+        const allHours = getRowNumbers(2);
 
-        const rains = getRowChances(rainRow);
-        console.log(rains);
+        // remove the first element because it is a bolded header that gets pulled in
+        allHours.splice(0,1);
 
-        //const winds = [...table.querySelectorAll('tr')][6];
+        const hours = splitBy3(allHours);
+        const temperatures = splitBy3(getRowNumbers(3));
+        const winds = splitBy3(getRowNumbers(6));
+        const skyCover = splitBy3(getRowNumbers(9));
+        const precipChance = splitBy3(getRowNumbers(10));
+        const humidity = splitBy3(getRowNumbers(11));
+        const rains = splitBy3(getRowChances(12));
+        const thunder = splitBy3(getRowChances(13));
+        const snow = splitBy3(getRowChances(14));
+
+        let day = 0;
+        let lineStr = '';
+
+        function milToReg(mil: number): string {
+            if(mil > 12) return `${mil - 12}pm`;
+            else if (mil === 0) return "12am";
+            else return `${mil}am`;
+        }
+
+        for(let i = 0; i<16; i++) {
+        
+            const hour = milToReg(hours[i][1]);
+            const weather = getWeatherLine(temperatures[i],skyCover[i],winds[i],humidity[i],precipChance[i],rains[i],snow[i],thunder[i]);
+            lineStr += `${hour}: ${weather}  |  `;
+     
+            if(i === 0) console.log(` ------ ${allDays[day++]} ------ `);
+            else if (hours[i][2] < 3) {
+                console.log(lineStr);
+                lineStr = '';
+                console.log(" ")
+                console.log(` ------ ${allDays[day++]} ------ `);
+            }
+            else if(i === 15) {
+                console.log(lineStr);
+            }
+       
+        }
+
     }
     else throw "no table found";
-
 
 });
 
