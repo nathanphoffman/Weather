@@ -52,6 +52,14 @@ const ChanceRanges : MagnitudeRange = {
     4: "Ocnl", // Occasional (max chance)
 };
 
+
+const Red = 31;
+const Yellow = 33
+const Green = 32;
+const White = 47;
+const Blue = 34;
+const Cyan = 36;
+
 function getPostfix(magnitude: Magnitude, postFixLetter: PostfixLetter) : Postfix {
     if(magnitude > 4 || magnitude < 0) throw "magnitude cannot be greater than 4 or less than 0";
     else if(postFixLetter === "W") return windSpeed[magnitude];
@@ -147,7 +155,27 @@ function getWeatherLine(temperature: number[], skyCover: number[], wind: number[
     const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude);
     const stormRating = getStormRating(getAverage(...skyCover), getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
 
-    return `${realFeelTemperature}${humidityPostFix} ${stormRating}${windPostFix}${thunderPostFix}`
+
+
+    const weatherLine = `${getRealFeelColor(realFeelTemperature)}${humidityPostFix} ${getStormColor(stormRating)}${windPostFix}${thunderPostFix}`;
+    return weatherLine;
+}
+
+function getRealFeelColor(realFeel: number): string {
+    if(realFeel >= 100) return color(realFeel,Red);
+    else if(realFeel >= 90) return color(realFeel, Yellow);
+    else if(realFeel >= 80) return String(realFeel)
+    else if(realFeel >= 60) return color(realFeel, Green);
+    else if(realFeel >= 40) return String(realFeel);
+    else if(realFeel >= 20 ) return color(realFeel, Yellow);
+    else if(realFeel < 20) return color(realFeel, Red);
+}
+
+function getStormColor(stormRating: number): string {
+    if(stormRating <= 3) return color(stormRating, Green);
+    else if(stormRating <= 10) return String(stormRating);
+    else if(stormRating < 20) return color(stormRating, Yellow);
+    else if(stormRating >= 20) return color(stormRating, Red);
 }
 
 const url = "https://forecast.weather.gov/MapClick.php?lat=40.1852&lon=-75.538&lg=english&&FcstType=digital";
@@ -166,6 +194,11 @@ const config = {
         'Accept': HEADER_ACCEPT,
     }
 };
+
+
+function color(txt, color) {
+    return `${"\x1b"}[${color}m${txt}${"\x1b"}[0m`
+}
 
 axios(config).then((response) => {
     const dom = new JSDOM(response.data);
@@ -239,7 +272,7 @@ axios(config).then((response) => {
             lineStr += `${hour}: ${weather}  |  `;
      
             if(i === 0) console.log(` ------ ${allDays[day++]} ------ `);
-            else if (hours[i][2] < 3) {
+            else if (hours[i][2] > 21) {
                 console.log(lineStr);
                 lineStr = '';
                 console.log(" ")
