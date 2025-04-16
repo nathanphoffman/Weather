@@ -109,10 +109,14 @@ function getMagnitude(value: number | string, range: MagnitudeRange) : Magnitude
     return magnitude as any as Magnitude;
 }
 
-function getRealFeelTemperature(temperature: number, humidity: number, wind: number) {
+function getRealFeelTemperature(temperature: number, humidity: number, wind: number, averageSkyCover: number) {
     // this is a rough approximation, simply adjusting by steps of 5 based on the calculated magnitude of these factors (the number of W and H letters in the output)
-    const realFeel = temperature + 5*(+humidity - wind);
-    const realFeelIn5s = Math.round(realFeel/5)*5;
+    const realFeel = temperature + 5*(humidity - wind);
+    let realFeelIn5s = Math.round(realFeel/5)*5;
+
+    if(averageSkyCover < 25) realFeelIn5s += 5;
+    else if(averageSkyCover > 75) realFeelIn5s -= 5;
+
     return realFeelIn5s;
 }
 
@@ -139,7 +143,7 @@ function getStormRating(skyCover: number, precipChance: number, rainMagnitude: M
 // Thunder: Thunder
 // Wind: Surface Wind
 // Temp: Temperature F
-function getWeatherLine(temperature: number[], skyCover: number[], wind: number[], humidity: number[], precipChance: number[], rain: string[], snow: string[], thunder: string[]) {
+function getWeatherLine(temperature: number[], skyCover: number[], wind: number[], humidity: number[], precipChance: number[], rain: string[], snow: string[], thunder: string[], hours: number[]) {
 
     const humidityMagnitude = getMagnitude(getAverage(...humidity), HumidityRanges);
     const windMagnitude = getMagnitude(getAverage(...wind), WindRanges);
@@ -152,10 +156,13 @@ function getWeatherLine(temperature: number[], skyCover: number[], wind: number[
     const windPostFix = getPostfix(windMagnitude, "W");
     const thunderPostFix = getPostfix(thunderMagnitude, "T");
 
-    const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude);
-    const stormRating = getStormRating(getAverage(...skyCover), getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
+    // we only want to calculate sky cover during daytime as this is used to apply a temperature change due to sun, 
+    // night time (and early morning / evening) application of 50 = 50% = 0 change to temperature
+    const hour = getAverage(...hours);
+    const averageSkyCover = hour > 8 && hour < 19 ? getAverage(...skyCover) : 50;
 
-
+    const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover);
+    const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
 
     const weatherLine = `${getRealFeelColor(realFeelTemperature)}${humidityPostFix} ${getStormColor(stormRating)}${windPostFix}${thunderPostFix}`;
     return weatherLine;
@@ -241,10 +248,7 @@ axios(config).then((response) => {
         //const sleetRow = 16;
 
         const allDays = getRows(1).filter(x=>x.toUpperCase() !== 'DATE');
-        const allHours = getRowNumbers(2);
-
-        // remove the first element because it is a bolded header that gets pulled in
-        allHours.splice(0,1);
+        const allHours = getRowNumbers(2).filter(x=>!isNaN(Number(x)));
 
         const hours = splitBy3(allHours);
         const temperatures = splitBy3(getRowNumbers(3));
@@ -260,7 +264,8 @@ axios(config).then((response) => {
         let lineStr = '';
 
         function milToReg(mil: number): string {
-            if(mil > 12) return `${mil - 12}pm`;
+            if(mil === 12) return "12pm";
+            else if(mil > 12) return `${mil - 12}pm`;
             else if (mil === 0) return "12am";
             else return `${mil}am`;
         }
@@ -268,7 +273,7 @@ axios(config).then((response) => {
         for(let i = 0; i<16; i++) {
         
             const hour = milToReg(hours[i][1]);
-            const weather = getWeatherLine(temperatures[i],skyCover[i],winds[i],humidity[i],precipChance[i],rains[i],snow[i],thunder[i]);
+            const weather = getWeatherLine(temperatures[i],skyCover[i],winds[i],humidity[i],precipChance[i],rains[i],snow[i],thunder[i],hours[i]);
             lineStr += `${hour}: ${weather}  |  `;
      
             if(i === 0) console.log(` ------ ${allDays[day++]} ------ `);
