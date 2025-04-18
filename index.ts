@@ -1,9 +1,12 @@
 // https://forecast.weather.gov/MapClick.php?lat=40.1852&lon=-75.538&lg=english&&FcstType=digital
 
+import { getChosenLocation } from "./src/config";
 import { getWeatherLine } from "./src/console";
 import { callOut } from "./src/scraper";
 import { ChanceForeast } from "./src/types";
-import { getDayOfTheWeek } from "./src/utility";
+import { getDayOfTheWeek, militaryToRegularTime } from "./src/utility";
+
+import { printTable, Table }  from 'console-table-printer';
 
 //import './extensions.ts';
 
@@ -55,40 +58,46 @@ async function run() {
     const snow = splitBy3(getRowChances(14));
 
     let day = 0;
-    let lineStr = '';
+    let days : string[] = [];
 
-    function milToReg(mil: number): string {
-        if (mil === 12) return "12pm";
-        else if (mil > 12) return `${mil - 12}pm`;
-        else if (mil === 0) return "12am";
-        else return `${mil}am`;
-    }
+    const p = new Table();
+    const obj : [][] = [];
+    //p.addRow({ description: 'red wine', value: 10.212 }, { color: 'red' });
+    //p.addRow({ description: 'green gemuse', value: 20.0 }, { color: 'green' });
 
-    console.log("\nWeather from NOAA:\n")
-
+    let currentDay = '';
     for (let i = 0; i < 48; i++) {
-
-        const hour = milToReg(hours[i][1]);
-        const weather = getWeatherLine(temperatures[i], skyCover[i], winds[i], humidity[i], precipChance[i], rains[i], snow[i], thunder[i], hours[i]);
-        lineStr += `|  ${hour}: ${weather}`;
-
 
         if (i === 0) {
             const uniqueDay = uniqueDays[day++];
-            console.log(`${uniqueDay} Today:`);
+            currentDay = `${uniqueDay} Today:`;
         }
-        else if (hours[i][1] >= 21 || hours[i][1] === 23) {
-            console.log(lineStr);
-            lineStr = '';
-            console.log(" ")
+        else if (hours[i][1] <= 2 || hours[i][1] === 24) {
             const uniqueDay = uniqueDays[day++];
-            console.log(`${uniqueDay} ${getDayOfTheWeek(String(uniqueDay))}:`);
-        }
-        else if (i === 47) {
-            console.log(lineStr);
+            currentDay = `${uniqueDay} ${getDayOfTheWeek(String(uniqueDay))}:`;
         }
 
+        const hour = militaryToRegularTime(hours[i][1]);
+        const weather = getWeatherLine(temperatures[i], skyCover[i], winds[i], humidity[i], precipChance[i], rains[i], snow[i], thunder[i], hours[i]);
+        
+        if(!obj[currentDay]) obj[currentDay] = [];
+        obj[currentDay].push(`${hour}: ${weather}`);
     }
+
+    let arr : any = [];
+
+    // this unwinds the seperate arrays of days into an array of objects with days as the keys
+    Object.keys(obj).map((day)=>{
+        obj[day].forEach((x,i)=>{
+            const newData = {[day]:x};
+            if(!arr[i]) arr.push(newData);
+            else arr[i] = {...arr[i], ...newData};
+        });
+    });
+
+    arr.forEach(a=>p.addRow(a))
+    p.printTable();
+
 }
 
 (async function () {

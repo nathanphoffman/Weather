@@ -9,9 +9,9 @@ export function getRealFeelColor(realFeel: number): number | undefined {
 
     if (realFeel >= RealFeelPreferences.VeryHotMin) return RED;
     else if (realFeel >= RealFeelPreferences.HotMin) return YELLOW;
-    else if (realFeel >= RealFeelPreferences.WarmMin) return undefined;
+    else if (realFeel >= RealFeelPreferences.WarmMin) return;
     else if (realFeel >= RealFeelPreferences.NiceMin) return GREEN;
-    else if (realFeel >= RealFeelPreferences.CoolMin) return undefined;
+    else if (realFeel >= RealFeelPreferences.CoolMin) return;
     else if (realFeel >= RealFeelPreferences.ColdMin) return YELLOW;
     else if (realFeel < RealFeelPreferences.ColdMin) return RED;
 }
@@ -27,8 +27,14 @@ export function color(txt, color) {
     if(!color) return txt;
     return `${"\x1b"}[${color}m${txt}${"\x1b"}[0m`
 }
-
-export function getHappyIndex(humidityMagnitude: Magnitude, realFeelColor, stormColor) {
+/*
+export function color(txt, color) {
+    return txt;
+    if(!color) return txt;
+    return `${"\x1b"}[${color}m${txt}${"\x1b"}[0m`
+}
+*/
+export function getHappyFaceFromColor(humidityMagnitude: Magnitude, realFeelColor, stormColor) {
     let happyIndex = 0;
 
     if(Number(humidityMagnitude) < 2) happyIndex++;

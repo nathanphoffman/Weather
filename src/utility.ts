@@ -14,3 +14,10 @@ export function getAverage(...numbers: number[] | Magnitude[]) {
     }) / numbers.length);
     return average;
 }
+
+export function militaryToRegularTime(mil: number): string {
+    if (mil === 12) return "12pm";
+    else if (mil > 12) return `${mil - 12}pm`;
+    else if (mil === 0) return "12am";
+    else return `${mil}am`;
+}

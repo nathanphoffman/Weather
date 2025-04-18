@@ -2,7 +2,7 @@ import { ChanceRanges } from "./config";
 import { Magnitude, MagnitudeRange } from "./types";
 import { getAverage } from "./utility";
 
-export function getAverageChance(...chances: string[]): Magnitude {
+export function convertNOAAChancesToAverageMagnitude(...chances: string[]): Magnitude {
     const magnitudes = chances.map((chance) => getMagnitude(chance, ChanceRanges));
     const averageMag = getAverage(...magnitudes);
     if (averageMag > 4) return 4 as Magnitude;

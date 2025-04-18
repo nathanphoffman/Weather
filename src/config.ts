@@ -1,7 +1,23 @@
 import { MagnitudeRange, RealFeelMin } from "./types";
 
-export const lat = 40.1852
-export const lon =- 75.538
+export const latLon = {
+    default: [40.1852, -75.538],
+    ny: [40.7198, -73.993]
+};
+
+export function getChosenLocation() {
+    const argument = (process.argv as any[])?.splice(2)[0];
+    const chosenLocation = !argument ? "default" : argument;
+    console.log(`\nWeather from NOAA for ${chosenLocation}:\n`);
+    return String(chosenLocation);
+}
+
+export function getLatLon() {
+    const chosenLocation = getChosenLocation();
+    const chosenLatLon = latLon[chosenLocation];
+    const queryString = `lat=${chosenLatLon[0]}&lon=${chosenLatLon[1]}`;
+    return queryString;
+}
 
 const LESS = -1, MORE = -1;
 
@@ -33,7 +49,7 @@ export const RealFeelPreferences: RealFeelMin = {
     VeryHotMin: 100,
     HotMin: 90,
     WarmMin: 80,
-    NiceMin: 65,
+    NiceMin: 60,
     CoolMin: 50,
     ColdMin: 25
 };
