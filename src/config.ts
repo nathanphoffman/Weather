@@ -1,8 +1,9 @@
 import { MagnitudeRange, RealFeelMin } from "./types";
 
 export const latLon = {
-    default: [40.1852, -75.538],
-    ny: [40.7198, -73.993]
+    default: [40.1852, -75.538], //royersford
+    ny: [40.7198, -73.993], //nyc
+    p: [39.99310, -74.78790] //philly
 };
 
 export function getChosenLocation() {
@@ -22,8 +23,8 @@ export function getLatLon() {
 const LESS = -1, MORE = -1;
 
 export const HumidityRanges: MagnitudeRange = {
-    0: [LESS, 55],
-    1: [56, 75],
+    0: [LESS, 50],
+    1: [51, 75],
     2: [76, 85],
     3: [86, 93],
     4: [94, MORE]
@@ -51,7 +52,7 @@ export const RealFeelPreferences: RealFeelMin = {
     WarmMin: 80,
     NiceMin: 60,
     CoolMin: 50,
-    ColdMin: 25
+    ColdMin: 25 // Very Cold is below ColdMin
 };
 
 export const HEADER_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36';
