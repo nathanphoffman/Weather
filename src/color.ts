@@ -6,23 +6,27 @@ export const BLINK = 5 as const;
 export const RED = 31 as const;
 export const GREEN = 32 as const;
 export const YELLOW = 33 as const;
+export const WHITE = 37 as const;
 
-export function getRealFeelColor(realFeel: number): number | undefined {
+export function getRealFeelMagnitude(realFeel: number): Magnitude {
 
-    if (realFeel >= RealFeelPreferences.VeryHotMin) return RED;
-    else if (realFeel >= RealFeelPreferences.HotMin) return YELLOW;
-    else if (realFeel >= RealFeelPreferences.WarmMin) return;
-    else if (realFeel >= RealFeelPreferences.NiceMin) return GREEN;
-    else if (realFeel >= RealFeelPreferences.CoolMin) return;
-    else if (realFeel >= RealFeelPreferences.ColdMin) return YELLOW;
-    else if (realFeel < RealFeelPreferences.ColdMin) return RED;
+    if (realFeel >= RealFeelPreferences.ExtremelyHotMin) return 4;
+    else if (realFeel >= RealFeelPreferences.VeryHotMin) return 3;
+    else if (realFeel >= RealFeelPreferences.HotMin) return 2;
+    else if (realFeel >= RealFeelPreferences.WarmMin) return 1;
+    else if (realFeel >= RealFeelPreferences.NiceMin) return 0;
+    else if (realFeel >= RealFeelPreferences.CoolMin) return 1;
+    else if (realFeel >= RealFeelPreferences.ColdMin) return 2;
+    else if (realFeel >= RealFeelPreferences.VeryColdMin) return 3;
+    else if (realFeel < RealFeelPreferences.VeryColdMin) return 4;
 }
 
-export function getStormColor(stormRating: number): number | undefined {
-    if (stormRating <= 4) return GREEN;
-    else if (stormRating < 8) return undefined;
-    else if (stormRating < 20) return YELLOW;
-    else return RED;
+export function getStormMagnitude(stormRating: number): Magnitude {
+    if (stormRating <= 4) return 0;
+    else if (stormRating < 10) return 1;
+    else if (stormRating < 30) return 2;
+    else if (stormRating < 50) return 3;
+    else return 4; // update this to a brighter color
 }
 
 export function color(txt, color) {
@@ -30,21 +34,12 @@ export function color(txt, color) {
     return `${"\x1b"}[${color}m${txt}${"\x1b"}[0m`
 }
 
-export function getHappyFaceFromColor(humidityMagnitude: Magnitude, realFeelColor, stormColor) {
-    let happyIndex = 0;
+export function getHappyFaceFromMagnitude(humidityMagnitude: Magnitude, realFeelMagnitude: Magnitude, stormMagnitude: Magnitude) {
+    let sadIndex = 0;
 
-    if(Number(humidityMagnitude) < 2) happyIndex++;
+    sadIndex = sadIndex + realFeelMagnitude + stormMagnitude + humidityMagnitude/2;
 
-    if(realFeelColor === GREEN) happyIndex++;
-    if(stormColor === GREEN) happyIndex++;
-    
-    if(realFeelColor === YELLOW) happyIndex -= 2;
-    if(stormColor === YELLOW) happyIndex -= 2;
-
-    if(realFeelColor === RED) happyIndex -= 3;
-    if(stormColor === RED) happyIndex -= 3;
-
-    if(happyIndex > 2) return "😎";
-    else if(happyIndex > 1) return "🙂";
+    if(sadIndex === 0) return "😎";
+    else if(sadIndex === 1) return "🙂";
     else return " ";
 }

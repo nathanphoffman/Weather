@@ -3,9 +3,9 @@
 // Wind: Surface Wind
 
 import { convertNOAAChancesToAverageMagnitude, getMagnitude, getRealFeelTemperature, getStormRating } from "./calculations";
-import { color, getHappyFaceFromColor, getRealFeelColor, getStormColor } from "./color";
+import { color, getHappyFaceFromMagnitude, getRealFeelMagnitude, getStormMagnitude } from "./color";
 import { HumidityRanges, WindRanges } from "./config";
-import { getPostfixWithColor } from "./postfix";
+import { getPostfix, getWithColor } from "./postfix";
 import { getAverage } from "./utility";
 
 // Temp: Temperature F
@@ -18,9 +18,9 @@ export function getWeatherLine(temperature: number[], skyCover: number[], wind: 
     const rainMagnitude = convertNOAAChancesToAverageMagnitude(...rain);
     const snowMagnitude = convertNOAAChancesToAverageMagnitude(...snow);
 
-    const humidityPostFix = getPostfixWithColor(humidityMagnitude, "H");
-    const windPostFix = getPostfixWithColor(windMagnitude, "W");
-    const thunderPostFix = getPostfixWithColor(thunderMagnitude, "T");
+    const humidityPostFix = getPostfix(humidityMagnitude, "H");
+    const windPostFix = getPostfix(windMagnitude, "W");
+    const thunderPostFix = getPostfix(thunderMagnitude, "T");
 
     // we only want to calculate sky cover during daytime as this is used to apply a temperature change due to sun
     // for non daytime hours we use 50% cover to not affect the calculation
@@ -30,10 +30,10 @@ export function getWeatherLine(temperature: number[], skyCover: number[], wind: 
     const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover);
     const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
 
-    const realFeelColor = getRealFeelColor(realFeelTemperature); 
-    const stormColor = getStormColor(stormRating);
-    const happyFace = getHappyFaceFromColor(humidityMagnitude, realFeelColor, stormColor);
+    const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature); 
+    const stormMagnitude = getStormMagnitude(stormRating);
+    const happyFace = getHappyFaceFromMagnitude(humidityMagnitude, realFeelMagnitude, stormMagnitude);
 
-    const weatherLine = `${color(realFeelTemperature,realFeelColor)}${humidityPostFix} ${color(stormRating,stormColor)}${windPostFix}${thunderPostFix} ${happyFace}`;
+    const weatherLine = `${getWithColor(realFeelMagnitude, String(realFeelTemperature))}${humidityPostFix} ${getWithColor(stormMagnitude, String(stormRating))}${windPostFix}${thunderPostFix} ${happyFace}`;
     return weatherLine;
 }

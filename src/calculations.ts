@@ -30,7 +30,7 @@ export function getMagnitude(value: number | string, range: MagnitudeRange): Mag
 
 export function getRealFeelTemperature(temperature: number, humidity: number, wind: number, averageSkyCover: number) {
     // this is a rough approximation, simply adjusting by steps of 5 based on the calculated magnitude of these factors (the number of W and H letters in the output)
-    const realFeel = temperature + 5 * (humidity - wind);
+    const realFeel = temperature + 2.5 * (humidity - wind);
     let realFeelIn5s = Math.round(realFeel / 5) * 5;
 
     if (averageSkyCover < 25) realFeelIn5s += 5;

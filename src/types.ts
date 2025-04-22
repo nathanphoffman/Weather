@@ -19,12 +19,14 @@ export type MagnitudeRange = {
 }
 
 export type RealFeelMin = {
+    ExtremelyHotMin: number,
     VeryHotMin: number,
     HotMin: number,
     WarmMin: number,
     NiceMin: number,
     CoolMin: number,
-    ColdMin: number 
+    ColdMin: number,
+    VeryColdMin: number
 }
 
 export {}
