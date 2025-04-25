@@ -1,4 +1,4 @@
-import { MagnitudeRange, RealFeelMin } from "./types";
+import { MagnitudeRange, RealFeelMin, StormMin } from "./types";
 
 export const latLon = {
     default: [40.1852, -75.538], //royersford
@@ -8,11 +8,23 @@ export const latLon = {
 };
 
 export function getChosenLocation() {
-    const argument = (process.argv as any[])?.splice(2)[0];
+    const argument = (process.argv as any[])?.[2];
     const chosenLocation = !argument ? "default" : argument;
-    console.log(`\nWeather from NOAA for ${chosenLocation}:\n`);
     return String(chosenLocation);
 }
+
+export function getLat() {
+    const chosenLocation = getChosenLocation();
+    const chosenLatLon = latLon[chosenLocation];
+    return chosenLatLon[0];
+}
+
+export function getLon() {
+    const chosenLocation = getChosenLocation();
+    const chosenLatLon = latLon[chosenLocation];
+    return chosenLatLon[1];
+}
+
 
 export function getLatLon() {
     const chosenLocation = getChosenLocation();
@@ -51,12 +63,20 @@ export const RealFeelPreferences: RealFeelMin = {
     ExtremelyHotMin: 105,
     VeryHotMin: 95,
     HotMin: 90,
-    WarmMin: 80,
+    WarmMin: 85,
     NiceMin: 65,
     CoolMin: 50,
     ColdMin: 25,
     VeryColdMin: 5 
     // Very Cold is below ColdMin
+};
+
+export const StormPreferences: StormMin = {
+    VeryBadMin: 50,
+    BadMin: 30,
+    PoorMin: 10,
+    AverageMin: 5
+    // Good is below (better) than average "storm level"
 };
 
 export const HEADER_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36';

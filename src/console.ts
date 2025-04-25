@@ -22,12 +22,11 @@ export function getWeatherLine(temperature: number[], skyCover: number[], wind: 
     const windPostFix = getPostfix(windMagnitude, "W");
     const thunderPostFix = getPostfix(thunderMagnitude, "T");
 
-    // we only want to calculate sky cover during daytime as this is used to apply a temperature change due to sun
-    // for non daytime hours we use 50% cover to not affect the calculation
     const hour = getAverage(...hours);
-    const averageSkyCover = hour > 8 && hour < 19 ? getAverage(...skyCover) : 50;
+    const averageSkyCover = getAverage(...skyCover);
+    const isDayTime = hour > 8 && hour < 19;
 
-    const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover);
+    const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover, isDayTime);
     const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
 
     const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature); 

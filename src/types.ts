@@ -28,5 +28,10 @@ export type RealFeelMin = {
     ColdMin: number,
     VeryColdMin: number
 }
+export type StormMin = {
+    VeryBadMin: number,
+    BadMin: number,
+    PoorMin: number,
+    AverageMin: number
+}
 
-export {}

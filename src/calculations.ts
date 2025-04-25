@@ -28,14 +28,12 @@ export function getMagnitude(value: number | string, range: MagnitudeRange): Mag
     return magnitude as any as Magnitude;
 }
 
-export function getRealFeelTemperature(temperature: number, humidity: number, wind: number, averageSkyCover: number) {
+export function getRealFeelTemperature(temperature: number, humidity: number, wind: number, averageSkyCover: number, isDayTime: boolean) {
     // this is a rough approximation, simply adjusting by steps of 5 based on the calculated magnitude of these factors (the number of W and H letters in the output)
-    const realFeel = temperature + 2.5 * (humidity - wind);
-    let realFeelIn5s = Math.round(realFeel / 5) * 5;
+    let realFeel = temperature + 3 * humidity - 5 * wind;
+    if (isDayTime && averageSkyCover < 100) realFeel += 7.5*((100 - averageSkyCover)/100);
 
-    if (averageSkyCover < 25) realFeelIn5s += 5;
-    else if (averageSkyCover > 75) realFeelIn5s -= 5;
-
+    const realFeelIn5s = Math.round(realFeel / 5) * 5;
     return realFeelIn5s;
 }
 
@@ -54,5 +52,6 @@ export function getStormRating(skyCover: number, precipChance: number, rainMagni
     const percipPenalty = (precipChance / 100) * ((snowMagnitude + rainMagnitude) * 5) + Math.round(precipChance / 10);
 
     const stormRating = skyCoverOutOf10 + windPenalty + percipPenalty + thunderPenalty;
-    return Math.round(stormRating);
+    if (stormRating < 10) return Math.round(stormRating);
+    else return 5*Math.round(stormRating/5);
 }

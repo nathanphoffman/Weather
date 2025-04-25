@@ -1,4 +1,4 @@
-import { RealFeelPreferences } from "./config";
+import { RealFeelPreferences, StormPreferences } from "./config";
 import { Magnitude } from "./types";
 
 export const BRIGHT = 1 as const;
@@ -22,11 +22,11 @@ export function getRealFeelMagnitude(realFeel: number): Magnitude {
 }
 
 export function getStormMagnitude(stormRating: number): Magnitude {
-    if (stormRating <= 4) return 0;
-    else if (stormRating < 10) return 1;
-    else if (stormRating < 30) return 2;
-    else if (stormRating < 50) return 3;
-    else return 4; // update this to a brighter color
+    if (stormRating < StormPreferences.AverageMin) return 0;
+    else if (stormRating < StormPreferences.PoorMin) return 1;
+    else if (stormRating < StormPreferences.BadMin) return 2;
+    else if (stormRating < StormPreferences.VeryBadMin) return 3;
+    else return 4;
 }
 
 export function color(txt, color) {
@@ -40,6 +40,6 @@ export function getHappyFaceFromMagnitude(humidityMagnitude: Magnitude, realFeel
     sadIndex = sadIndex + realFeelMagnitude + stormMagnitude + humidityMagnitude/2;
 
     if(sadIndex === 0) return "😎";
-    else if(sadIndex === 1) return "🙂";
+    else if(sadIndex <= 1) return "🙂";
     else return " ";
 }
