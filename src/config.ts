@@ -36,19 +36,19 @@ export function getLatLon() {
 const LESS = -1, MORE = -1;
 
 export const HumidityRanges: MagnitudeRange = {
-    0: [LESS, 50],
-    1: [51, 75],
+    0: [LESS, 45],
+    1: [46, 75],
     2: [76, 85],
     3: [86, 93],
     4: [94, MORE]
 } as const;
 
 export const WindRanges: MagnitudeRange = {
-    0: [LESS, 8],
-    1: [9, 16],
-    2: [15, 21],
-    3: [22, 27],
-    4: [28, MORE]
+    0: [LESS, 9],
+    1: [10, 17],
+    2: [18, 24],
+    3: [25, 31],
+    4: [32, MORE]
 } as const;
 
 export const ChanceRanges: MagnitudeRange = {
@@ -63,12 +63,12 @@ export const RealFeelPreferences: RealFeelMin = {
     ExtremelyHotMin: 105,
     VeryHotMin: 95,
     HotMin: 90,
-    WarmMin: 85,
+    WarmMin: 80,
     NiceMin: 65,
     CoolMin: 50,
     ColdMin: 25,
     VeryColdMin: 5 
-    // Very Cold is below ColdMin
+    // Extremely Cold (bright red) is below ColdMin
 };
 
 export const StormPreferences: StormMin = {
@@ -76,7 +76,7 @@ export const StormPreferences: StormMin = {
     BadMin: 30,
     PoorMin: 10,
     AverageMin: 5
-    // Good is below (better) than average "storm level"
+    // Good (green) is better than (or below) AverageMin "storm level"
 };
 
 export const HEADER_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36';

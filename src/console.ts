@@ -24,9 +24,8 @@ export function getWeatherLine(temperature: number[], skyCover: number[], wind: 
 
     const hour = getAverage(...hours);
     const averageSkyCover = getAverage(...skyCover);
-    const isDayTime = hour > 8 && hour < 19;
 
-    const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover, isDayTime);
+    const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover, hour);
     const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
 
     const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature); 
