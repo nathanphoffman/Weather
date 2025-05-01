@@ -2,6 +2,7 @@
 
 import { getChosenLocation } from "./src/config";
 import { getWeatherLine } from "./src/console";
+import info from "./src/info";
 import { callOut } from "./src/scraper";
 import { ChanceForeast } from "./src/types";
 import { getDayOfTheWeek, militaryToRegularTime } from "./src/utility";
@@ -60,7 +61,7 @@ async function run() {
     let day = 0;
     let days : string[] = [];
 
-    const p = new Table();
+    const weatherTable = new Table();
     const obj : [][] = [];
     //p.addRow({ description: 'red wine', value: 10.212 }, { color: 'red' });
     //p.addRow({ description: 'green gemuse', value: 20.0 }, { color: 'green' });
@@ -95,8 +96,10 @@ async function run() {
         });
     });
 
-    arr.forEach(a=>p.addRow(a))
-    p.printTable();
+    arr.forEach(a=>weatherTable.addRow(a))
+    
+    weatherTable.printTable();
+    info.printInfo();
 
 }
 

@@ -74,7 +74,7 @@ export const RealFeelPreferences: RealFeelMin = {
 export const StormPreferences: StormMin = {
     VeryBadMin: 50,
     BadMin: 30,
-    PoorMin: 10,
+    PoorMin: 15,
     AverageMin: 5
     // Good (green) is better than (or below) AverageMin "storm level"
 };

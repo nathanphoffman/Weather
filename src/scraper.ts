@@ -7,8 +7,6 @@ console.log(`\nWeather from NOAA for ${getChosenLocation()}:\n`);
 
 export async function callOut(page: number) {
 
-
-    const latLon = getLatLon();
     const lat = getLat();
     const lon = getLon();
     const url1 = `https://forecast.weather.gov/MapClick.php?w0=t&w1=td&w2=wc&w3=sfcwind&w3u=1&w4=sky&w5=pop&w6=rh&w7=rain&w8=thunder&w9=snow&w10=fzg&w11=sleet&w13u=0&w14u=1&w15u=1&AheadHour=0&FcstType=digital&textField1=${lat}&textField2=${lon}&site=all&unit=0&dd=&bw=&BackDay.x=65&BackDay.y=3`;
