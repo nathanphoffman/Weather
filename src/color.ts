@@ -37,7 +37,7 @@ export function color(txt, color) {
 export function getHappyFaceFromMagnitude(humidityMagnitude: Magnitude, realFeelMagnitude: Magnitude, stormMagnitude: Magnitude) {
     let sadIndex = 0;
 
-    sadIndex = sadIndex + realFeelMagnitude + stormMagnitude + humidityMagnitude/2;
+    sadIndex = sadIndex + realFeelMagnitude + stormMagnitude + humidityMagnitude*0.5;
 
     if(sadIndex === 0) return "😎";
     else if(sadIndex <= 1) return "🙂";

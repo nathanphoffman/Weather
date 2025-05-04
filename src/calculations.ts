@@ -57,10 +57,12 @@ export function getStormRating(skyCover: number, precipChance: number, rainMagni
     const thunderPenalty = thunderMagnitude * 5;
 
     // practical max of 32 in rare cases
-    const windPenalty = windMagnitude * windMagnitude * (windMagnitude / 4);
+    const windPenalty = windMagnitude * windMagnitude * (windMagnitude / 2);
 
     // practical max of 35 in rare cases
-    const percipPenalty = (precipChance / 100) * ((snowMagnitude + rainMagnitude) * 5) + Math.round(precipChance / 10);
+    const precipPercent = (precipChance / 100);
+    const precipPercentSquared = precipPercent * precipPercent;
+    const percipPenalty =  precipPercentSquared * ((snowMagnitude + rainMagnitude) * 5) + Math.round(precipPercentSquared * 10);
 
     const stormRating = skyCoverOutOf10 + windPenalty + percipPenalty + thunderPenalty;
     if (stormRating < 10) return Math.round(stormRating);
