@@ -37,9 +37,9 @@ export function getRealFeelTemperature(temperature: number, humidity: number, wi
     const DIFFDAY = MIDDAY-SUNRISE;
 
     const isDayTime = hour > SUNRISE && hour < SUNSET;
-    let realFeel = temperature + 3 * (humidity - wind);
+    let realFeel = temperature + 4*(Math.pow(humidity,(1/2)) - wind);
 
-    if (isDayTime && averageSkyCover < 100) {
+    if (isDayTime && averageSkyCover < 95) {
         const dayTimeAmount = DIFFDAY - Math.abs(MIDDAY - hour);
         realFeel += dayTimeAmount * 2 * ((100 - averageSkyCover) / 100);
     }

@@ -5,7 +5,8 @@ export const latLon = {
     ny: [40.7198, -73.993], //nyc
     p: [39.99310, -74.78790], //philly
     cabin: [41.39127,-76.75871],
-    h: [40.2761,-76.8845] //harrisburg
+    h: [40.2761,-76.8845], //harrisburg
+    j: [39.6794, -78.5220]
 };
 
 export function getChosenLocation() {
@@ -37,16 +38,16 @@ export function getLatLon() {
 const LESS = -1, MORE = -1;
 
 export const HumidityRanges: MagnitudeRange = {
-    0: [LESS, 45],
-    1: [46, 75],
-    2: [76, 85],
-    3: [86, 93],
+    0: [LESS, 47],
+    1: [48, 59],
+    2: [60, 76],
+    3: [77, 93],
     4: [94, MORE]
 } as const;
 
 export const WindRanges: MagnitudeRange = {
-    0: [LESS, 9],
-    1: [10, 17],
+    0: [LESS, 10],
+    1: [11, 17],
     2: [18, 26],
     3: [27, 36],
     4: [37, MORE]
@@ -61,13 +62,13 @@ export const ChanceRanges: MagnitudeRange = {
 };
 
 export const RealFeelPreferences: RealFeelMin = {
-    ExtremelyHotMin: 110,
+    ExtremelyHotMin: 105,
     VeryHotMin: 100,
     HotMin: 95,
     WarmMin: 85,
     NiceMin: 65,
-    CoolMin: 50,
-    ColdMin: 25,
+    CoolMin: 45,
+    ColdMin: 30,
     VeryColdMin: 5 
     // Extremely Cold (bright red) is below ColdMin
 };
