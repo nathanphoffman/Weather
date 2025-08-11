@@ -46,11 +46,11 @@ export const HumidityRanges: MagnitudeRange = {
 } as const;
 
 export const WindRanges: MagnitudeRange = {
-    0: [LESS, 10],
-    1: [11, 17],
-    2: [18, 26],
-    3: [27, 36],
-    4: [37, MORE]
+    0: [LESS, 9],
+    1: [10, 15],
+    2: [16, 22],
+    3: [23, 29],
+    4: [30, MORE]
 } as const;
 
 export const ChanceRanges: MagnitudeRange = {
@@ -64,7 +64,7 @@ export const ChanceRanges: MagnitudeRange = {
 export const RealFeelPreferences: RealFeelMin = {
     ExtremelyHotMin: 105,
     VeryHotMin: 100,
-    HotMin: 95,
+    HotMin: 90,
     WarmMin: 85,
     NiceMin: 65,
     CoolMin: 45,
@@ -77,7 +77,7 @@ export const StormPreferences: StormMin = {
     VeryBadMin: 50,
     BadMin: 30,
     PoorMin: 20,
-    AverageMin: 9
+    AverageMin: 8
     // Good (green) is better than (or below) AverageMin "storm level"
 };
 
