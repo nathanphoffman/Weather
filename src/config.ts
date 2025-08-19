@@ -35,14 +35,15 @@ export function getLatLon() {
     return queryString;
 }
 
-const LESS = -1, MORE = -1;
+const LESS = -1 as const;
+const MORE = -1 as const;
 
 export const HumidityRanges: MagnitudeRange = {
     0: [LESS, 47],
-    1: [48, 59],
-    2: [60, 76],
-    3: [77, 93],
-    4: [94, MORE]
+    1: [48, 64],
+    2: [65, 81],
+    3: [82, 96],
+    4: [97, MORE]
 } as const;
 
 export const WindRanges: MagnitudeRange = {

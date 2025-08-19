@@ -12,12 +12,12 @@ class Info {
         console.log(" - 10-19 Overcast: If ~10 precipitation very unlikely, could also be partially clear if there is winds or thunder.");
         console.log(" - 20-29 Drizzle/Flurry: Some precipitation possible. Definitely overcast.");
         console.log(" - 30-39 Precipatory: Some precipitation likely, sky slightly darker.");
-        console.log(" - 40-49 Storm: Some storm conditions, precipitation effectively guaranteed, sky much darker.");
-        console.log(" - 50+ Strong Storm: Stronger precipitation and/or stronger winds/thunder. If 60+ possible severe storm. Check forecasts.\n");
+        console.log(" - 40-49 Storm: Storm conditions, precipitation effectively guaranteed, sky much darker.");
+        console.log(" - 50+ Strong Storm: Stronger precipitation and/or stronger winds/thunder. Possible severe storm, check other forecasts.\n");
 
-        console.log("A smiley face with glasses will appear if: the realfeel & storm factor are considered good (green) AND it is not humid at all.");
-        console.log("A regular smiley face will appear if only one of the above 3 factors is grey, and none are red/yellow.");
-        console.log("To prevent this text from showing, use the option -d to dismiss. For more help use the option -h.");
+        console.log("A smiley face with glasses will appear if: the realfeel & storm factor are considered good (green) AND it is not humid at all (excellent weather).");
+        console.log("A regular smiley face will appear if the conditions are decently nice such as a grey and green or an orange and green factor above.");
+        console.log("To prevent this text from showing, use the option -d to dismiss.");
     }
 
 }
