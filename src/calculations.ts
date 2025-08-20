@@ -38,8 +38,8 @@ export function getRealFeelTemperature(temperature: number, humidity: number, wi
 
     const isDayTime = hour > SUNRISE && hour < SUNSET;
 
-    // the reason for the reduction in temperature of -4 is that being outside in the shade even in calm breeze has more windflow than indoors, and outdoor temperatures do already include sunlight to some extent
-    let realFeel = temperature + 3*(humidity - wind) - 4;
+    // the reason for the reduction in temperature of -4.5 is that being outside in the shade even in calm breeze has more windflow than indoors, and outdoor temperatures do already include sunlight to some extent
+    let realFeel = temperature + 1.5*humidity -3*wind - 4.5;
 
     if (isDayTime && averageSkyCover < 95) {
         const dayTimeAmount = DIFFDAY - Math.abs(MIDDAY - hour);
