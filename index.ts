@@ -11,7 +11,7 @@ import { printTable, Table }  from 'console-table-printer';
 
 //import './extensions.ts';
 
-
+// test comment
 async function run() {
 
     const getRows1 = await callOut(1);
