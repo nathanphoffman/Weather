@@ -1,10 +1,11 @@
 // https://forecast.weather.gov/MapClick.php?lat=40.1852&lon=-75.538&lg=english&&FcstType=digital
 
+import { convertNOAAChancesToAverageMagnitude } from "./src/calculations";
 import { getChosenLocation } from "./src/config";
 import { getWeatherLine } from "./src/console";
 import info from "./src/info";
 import { callOut } from "./src/scraper";
-import { ChanceForeast } from "./src/types";
+import { ChanceForeast, ThreeHourWeather } from "./src/types";
 import { getDayOfTheWeek, militaryToRegularTime } from "./src/utility";
 
 import { printTable, Table }  from 'console-table-printer';
@@ -48,15 +49,24 @@ async function run() {
     const uniqueDays = allDays.reduce((a,b)=>!a.includes(b) ? [...a,b] : a,[]);
     const allHours = getRowNumbers(2).filter(x => !isNaN(Number(x)));
 
-    const hours = splitBy3(allHours);
-    const temperatures = splitBy3(getRowNumbers(3));
-    const winds = splitBy3(getRowNumbers(6));
-    const skyCover = splitBy3(getRowNumbers(9));
-    const precipChance = splitBy3(getRowNumbers(10));
-    const humidity = splitBy3(getRowNumbers(11));
-    const rains = splitBy3(getRowChances(12));
-    const thunder = splitBy3(getRowChances(13));
-    const snow = splitBy3(getRowChances(14));
+    const temperatures = getRowNumbers(3);
+    const winds = getRowNumbers(6);
+    const skyCover = getRowNumbers(9);
+    const precipChance = getRowNumbers(10);
+    const humidity = getRowNumbers(11);
+    const rain = getRowChances(12).map((x)=>convertNOAAChancesToAverageMagnitude(x))
+    const thunder = getRowChances(13).map((x)=>convertNOAAChancesToAverageMagnitude(x))
+    const snow = getRowChances(14).map((x)=>convertNOAAChancesToAverageMagnitude(x))
+
+    const hours_3 = splitBy3(allHours);
+    const temperatures_3 = splitBy3(temperatures);
+    const winds_3 = splitBy3(winds);
+    const skyCover_3 = splitBy3(skyCover);
+    const precipChance_3 = splitBy3(precipChance);
+    const humidity_3 = splitBy3(humidity);
+    const rain_3 = splitBy3(rain);
+    const thunder_3 = splitBy3(thunder);
+    const snow_3 = splitBy3(snow);
 
     let day = 0;
     let days : string[] = [];
@@ -73,13 +83,24 @@ async function run() {
             const uniqueDay = uniqueDays[day++];
             currentDay = `${uniqueDay} Today:`;
         }
-        else if (hours[i][1] <= 2 || hours[i][1] === 24) {
+        else if (hours_3[i][1] <= 2 || hours_3[i][1] === 24) {
             const uniqueDay = uniqueDays[day++];
             currentDay = `${uniqueDay} ${getDayOfTheWeek(String(uniqueDay))}:`;
         }
 
         const hour = militaryToRegularTime(hours[i][1]);
-        const weather = getWeatherLine(temperatures[i], skyCover[i], winds[i], humidity[i], precipChance[i], rains[i], snow[i], thunder[i], hours[i]);
+        const weather = getWeatherLine(
+            {
+                temperatures: temperatures_3[i], 
+                skyCover: skyCover_3[i], 
+                winds: winds_3[i], 
+                humidity: humidity_3[i], 
+                precipChance: precipChance_3[i], 
+                rain: rain_3[i], 
+                snow: snow_3[i], 
+                thunder: thunder_3[i], 
+                hours: hours_3[i]
+            });
         
         if(!obj[currentDay]) obj[currentDay] = [];
         obj[currentDay].push(`${hour}: ${weather}`);

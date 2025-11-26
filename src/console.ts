@@ -6,17 +6,19 @@ import { convertNOAAChancesToAverageMagnitude, getMagnitude, getRealFeelTemperat
 import { color, getHappyFaceFromMagnitude, getRealFeelMagnitude, getStormMagnitude } from "./color";
 import { HumidityRanges, WindRanges } from "./config";
 import { getPostfix, getWithColor } from "./postfix";
+import { ThreeHourWeather } from "./types";
 import { getAverage } from "./utility";
 
+
 // Temp: Temperature F
-export function getWeatherLine(temperature: number[], skyCover: number[], wind: number[], humidity: number[], precipChance: number[], rain: string[], snow: string[], thunder: string[], hours: number[]) {
+export function getWeatherLine({temperature, skyCover, wind, humidity, precipChance, rain, snow, thunder, hours}: ThreeHourWeather) {
 
     const humidityMagnitude = getMagnitude(getAverage(...humidity), HumidityRanges);
     const windMagnitude = getMagnitude(getAverage(...wind), WindRanges);
 
-    const thunderMagnitude = convertNOAAChancesToAverageMagnitude(...thunder);
-    const rainMagnitude = convertNOAAChancesToAverageMagnitude(...rain);
-    const snowMagnitude = convertNOAAChancesToAverageMagnitude(...snow);
+    const thunderMagnitude = thunder;
+    const rainMagnitude = rain;
+    const snowMagnitude = snow;
 
     const humidityPostFix = getPostfix(humidityMagnitude, "H");
     const windPostFix = getPostfix(windMagnitude, "W");

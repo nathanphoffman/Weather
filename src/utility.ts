@@ -21,3 +21,7 @@ export function militaryToRegularTime(mil: number): string {
     else if (mil === 0) return "12am";
     else return `${mil}am`;
 }
+
+export function pipe (fns) { 
+    return (x) => fns.reduce((acc, fn) => fn(acc), x);
+}
