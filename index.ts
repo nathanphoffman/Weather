@@ -5,10 +5,11 @@ import { getChosenLocation } from "./src/config";
 import { getWeatherLine } from "./src/console";
 import info from "./src/info";
 import { callOut } from "./src/scraper";
-import { ChanceForeast, ThreeHourWeather } from "./src/types";
-import { getDayOfTheWeek, militaryToRegularTime } from "./src/utility";
+import { ThreeHourWeatherModel } from "./src/models/ThreeHourWeather";
+import { getDayOfTheWeek, militaryHourToRegularHour } from "./src/utility";
 
 import { printTable, Table }  from 'console-table-printer';
+import { ChanceForeast } from "./src/types";
 
 //import './extensions.ts';
 
@@ -34,7 +35,7 @@ async function run() {
         return rowData.map(x => Number(x));
     }
 
-    function splitBy3(arr: any[], prev?: any[][]): any[][] {
+    function splitBy3<T>(arr: T[], prev?: T[][]): T[][] {
         const deepClone = [...arr];
         const take3 = deepClone.splice(0, 3);
         if (arr.length < 3) return prev;
@@ -54,9 +55,21 @@ async function run() {
     const skyCover = getRowNumbers(9);
     const precipChance = getRowNumbers(10);
     const humidity = getRowNumbers(11);
-    const rain = getRowChances(12).map((x)=>convertNOAAChancesToAverageMagnitude(x))
-    const thunder = getRowChances(13).map((x)=>convertNOAAChancesToAverageMagnitude(x))
-    const snow = getRowChances(14).map((x)=>convertNOAAChancesToAverageMagnitude(x))
+    const rain = getRowChances(12);
+    const thunder = getRowChances(13);
+    const snow = getRowChances(14);
+
+    const validatedModel = ThreeHourWeatherModel.formModelFromCandidate({
+                temperature, 
+                skyCover, 
+                wind, 
+                humidity, 
+                precipChance, 
+                rain, 
+                snow, 
+                thunder, 
+                hour
+    });
 
     const hours_3 = splitBy3(allHours);
     const temperatures_3 = splitBy3(temperatures);
@@ -79,16 +92,18 @@ async function run() {
     let currentDay = '';
     for (let i = 0; i < 48; i++) {
 
+        const middleHourOfThree = Number(hours_3[i][1]);
+
         if (i === 0) {
             const uniqueDay = uniqueDays[day++];
             currentDay = `${uniqueDay} Today:`;
         }
-        else if (hours_3[i][1] <= 2 || hours_3[i][1] === 24) {
+        else if (middleHourOfThree <= 2 || middleHourOfThree === 24) {
             const uniqueDay = uniqueDays[day++];
             currentDay = `${uniqueDay} ${getDayOfTheWeek(String(uniqueDay))}:`;
         }
 
-        const hour = militaryToRegularTime(hours[i][1]);
+        const hour = militaryHourToRegularHour(middleHourOfThree);
         const weather = getWeatherLine(
             {
                 temperatures: temperatures_3[i], 

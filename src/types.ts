@@ -23,19 +23,7 @@ export type MagnitudeRange = {
     [key in Magnitude]: number[] | ChanceForeast
 }
 
-type HourlyNumbers = number[];
-
-export type ThreeHourWeather = {
-    temperature: HourlyNumbers, 
-    skyCover: HourlyNumbers, 
-    wind: HourlyNumbers, 
-    humidity: HourlyNumbers, 
-    precipChance: HourlyNumbers, 
-    rain: ChanceForeast, 
-    snow: ChanceForeast, 
-    thunder: ChanceForeast, 
-    hours: HourlyNumbers
-};
+export type HourlyNumbers = number[];
 
 export type RealFeelMin = {
     ExtremelyHotMin: number,
@@ -54,3 +42,14 @@ export type StormMin = {
     AverageMin: number
 }
 
+export type Candidate<T> = {
+    [K in keyof T]?: any;
+};
+
+export type Hour = number;
+
+export type UnknownNumber = number;
+
+export interface DomainModel<T> {
+    formModelFromCandidate(candidate: Candidate<T>): T;
+}

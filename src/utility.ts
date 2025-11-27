@@ -15,7 +15,7 @@ export function getAverage(...numbers: number[] | Magnitude[]) {
     return average;
 }
 
-export function militaryToRegularTime(mil: number): string {
+export function militaryHourToRegularHour(mil: number): string {
     if (mil === 12) return "12pm";
     else if (mil > 12) return `${mil - 12}pm`;
     else if (mil === 0) return "12am";
@@ -25,3 +25,9 @@ export function militaryToRegularTime(mil: number): string {
 export function pipe (fns) { 
     return (x) => fns.reduce((acc, fn) => fn(acc), x);
 }
+
+export function arrayNotEmpty (arr: []): boolean {
+    return arr && arr.length > 0;
+}
+
+//export function formModel()
