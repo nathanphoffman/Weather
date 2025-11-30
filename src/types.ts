@@ -43,7 +43,7 @@ export type StormMin = {
 }
 
 export type Candidate<T> = {
-    [K in keyof T]?: any;
+    [K in keyof T]?: unknown;
 };
 
 export type Hour = number;

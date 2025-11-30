@@ -25,6 +25,7 @@ async function run() {
         return rows;
     }
 
+    /*
     function getRowChances(row: number) {
         const rowData = getRows(row);
         return rowData as any as ChanceForeast[];
@@ -34,7 +35,7 @@ async function run() {
         const rowData = getRows(row);
         return rowData.map(x => Number(x));
     }
-
+*/
     function splitBy3<T>(arr: T[], prev?: T[][]): T[][] {
         const deepClone = [...arr];
         const take3 = deepClone.splice(0, 3);
@@ -48,39 +49,33 @@ async function run() {
 
     const allDays = getRows(1).filter(x => x.toUpperCase() !== 'DATE');
     const uniqueDays = allDays.reduce((a,b)=>!a.includes(b) ? [...a,b] : a,[]);
-    const allHours = getRowNumbers(2).filter(x => !isNaN(Number(x)));
+    const allHours = getRows(2).filter(x => !isNaN(Number(x)));
 
-    const temperatures = getRowNumbers(3);
-    const winds = getRowNumbers(6);
-    const skyCover = getRowNumbers(9);
-    const precipChance = getRowNumbers(10);
-    const humidity = getRowNumbers(11);
-    const rain = getRowChances(12);
-    const thunder = getRowChances(13);
-    const snow = getRowChances(14);
+    const temperatureColumns = getRows(3);
+    const windColumns = getRows(6);
+    const skyCoverColumns = getRows(9);
+    const precipChanceColumns = getRows(10);
+    const humidityColumns = getRows(11);
+    const rainColumns = getRows(12);
+    const thunderColumns = getRows(13);
+    const snowColumns = getRows(14);
 
-    const validatedModel = ThreeHourWeatherModel.formModelFromCandidate({
-                temperature, 
-                skyCover, 
-                wind, 
-                humidity, 
-                precipChance, 
-                rain, 
-                snow, 
-                thunder, 
+    const hourlyWeatherRows = allHours.map((hour,i)=>ThreeHourWeatherModel.formModelFromCandidate(({
+                temperature: temperatureColumns[i], 
+                skyCover: skyCoverColumns[i], 
+                wind: windColumns[i], 
+                humidity: humidityColumns[i], 
+                precipChance: precipChanceColumns[i], 
+                rain: rainColumns[i], 
+                snow: snowColumns[i], 
+                thunder: thunderColumns[i], 
                 hour
-    });
+    })));
 
-    const hours_3 = splitBy3(allHours);
-    const temperatures_3 = splitBy3(temperatures);
-    const winds_3 = splitBy3(winds);
-    const skyCover_3 = splitBy3(skyCover);
-    const precipChance_3 = splitBy3(precipChance);
-    const humidity_3 = splitBy3(humidity);
-    const rain_3 = splitBy3(rain);
-    const thunder_3 = splitBy3(thunder);
-    const snow_3 = splitBy3(snow);
+    const hourlyWeatherRowsGroupsOf3 = splitBy3(hourlyWeatherRows);
+    console.log(hourlyWeatherRowsGroupsOf3);
 
+/*
     let day = 0;
     let days : string[] = [];
 
@@ -136,6 +131,7 @@ async function run() {
     
     weatherTable.printTable();
     info.printInfo();
+    */
 
 }
 

@@ -33,7 +33,7 @@ export async function callOut(page: number) {
         return (row: number) => {
 
             // NOAA renders two tables as a single table, each is 17 high, 
-            // so we also pull 17 down to grab the second "table" of data
+            // so we also pull 17 down to grab the second "table" of data and merge together
             // below both rows for a single piece of data are gathered (like humidity)
             const row1 = [...table.querySelectorAll('tr')][row];
             const row2 = [...table.querySelectorAll('tr')][row + 17];
