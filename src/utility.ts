@@ -52,6 +52,10 @@ export function isPositive(input: unknown) {
     return isNumber(input) && Number(input) > 0;
 }
 
+export function isNotNegative(input: unknown) {
+    return isNumber(input) && Number(input) >= 0;
+}
+
 export function hasValue(input: unknown) {
     return input !== undefined && input !== null && input !== "";
 }
@@ -61,10 +65,13 @@ export function isString(input: unknown) {
 }
 
 export function candidateToType<T>(candidate: unknown, validators: ((candidate: unknown) => boolean)[]) {
-    const failedFunctionsOrUndefined = validators.map((validator) => validator(candidate) ? undefined : validator[0].name);
+    const failedFunctionsOrUndefined = validators.map((validator) => validator(candidate) ? undefined : validator.name);
     const failedFunctions = stripUndefined(failedFunctionsOrUndefined);
 
-    if (arrayNotEmpty(failedFunctions)) throw `value ${candidate} was unable to be converted to designated type, failed on conversions: ${failedFunctions.join(',')}`;
+    if (arrayNotEmpty(failedFunctions)) {
+        console.log("VALIDATION FAILED!");
+        throw `value ${candidate} was unable to be converted to designated type, failed on conversions: ${failedFunctions.join(',')}`;4
+    }
     else return candidate as T;
 }
 

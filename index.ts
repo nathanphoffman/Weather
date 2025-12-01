@@ -2,7 +2,7 @@
 
 import { convertNOAAChancesToAverageMagnitude } from "./src/calculations";
 import { getChosenLocation } from "./src/config";
-import { getWeatherLine } from "./src/console";
+//import { getWeatherLine } from "./src/console";
 import info from "./src/info";
 import { callOut } from "./src/scraper";
 import { ThreeHourWeatherModel } from "./src/models/ThreeHourWeather";
@@ -74,6 +74,52 @@ async function run() {
 
     const hourlyWeatherRowsGroupsOf3 = splitBy3(hourlyWeatherRows);
     console.log(hourlyWeatherRowsGroupsOf3);
+
+    const averagedThreeHourWeather = hourlyWeatherRowsGroupsOf3.map((threeHours)=>{
+        const middleHour = threeHours[1].hour;
+        
+        
+        const threeHourWeather: ThreeHourWeatherModel = {
+            hour: militaryHourToRegularHour(middleHour)
+        };
+
+        
+        return 
+
+
+        /*
+
+    const humidityMagnitude = getMagnitude(getAverage(...humidity), HumidityRanges);
+    const windMagnitude = getMagnitude(getAverage(...wind), WindRanges);
+
+    const thunderMagnitude = thunder;
+    const rainMagnitude = rain;
+    const snowMagnitude = snow;
+
+    const humidityPostFix = getPostfix(humidityMagnitude, "H");
+    const windPostFix = getPostfix(windMagnitude, "W");
+    const thunderPostFix = getPostfix(thunderMagnitude, "T");
+
+    const hour = getAverage(...hours);
+    const averageSkyCover = getAverage(...skyCover);
+
+    const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover, hour);
+    const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
+
+    const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature); 
+    const stormMagnitude = getStormMagnitude(stormRating);
+    const happyFace = getHappyFaceFromMagnitude(humidityMagnitude, realFeelMagnitude, stormMagnitude);
+
+    const weatherLine = `${getWithColor(realFeelMagnitude, String(realFeelTemperature))}${humidityPostFix} ${getWithColor(stormMagnitude, String(stormRating))}${windPostFix}${thunderPostFix} ${happyFace}`;
+    return weatherLine;
+
+        */
+
+
+
+    })
+
+
 
 /*
     let day = 0;

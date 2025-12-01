@@ -7,7 +7,7 @@ type Percent = number;
 type AirMilesPerHour = number;
 
 // !! unknown number should be updated here
-export interface ThreeHourWeatherModel {
+export interface ThreeHourWeatherOutputModel {
     temperature: Fahrenheit,
     skyCover: Percent,
     wind: AirMilesPerHour,

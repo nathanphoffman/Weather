@@ -9,9 +9,12 @@ import { getPostfix, getWithColor } from "./postfix";
 import { ThreeHourWeatherModel } from "./models/ThreeHourWeather";
 import { getAverage } from "./utility";
 
+/*
+
+!! DELETE THIS WHEN DONE
 
 // Temp: Temperature F
-export function getWeatherLine({temperature, skyCover, wind, humidity, precipChance, rain, snow, thunder, hours}: ThreeHourWeatherModel) {
+export function getWeatherLine({temperature, skyCover, wind, humidity, precipChance, rain, snow, thunder, hour}: ThreeHourWeatherModel) {
 
     const humidityMagnitude = getMagnitude(getAverage(...humidity), HumidityRanges);
     const windMagnitude = getMagnitude(getAverage(...wind), WindRanges);
@@ -37,3 +40,4 @@ export function getWeatherLine({temperature, skyCover, wind, humidity, precipCha
     const weatherLine = `${getWithColor(realFeelMagnitude, String(realFeelTemperature))}${humidityPostFix} ${getWithColor(stormMagnitude, String(stormRating))}${windPostFix}${thunderPostFix} ${happyFace}`;
     return weatherLine;
 }
+    */
