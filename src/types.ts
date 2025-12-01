@@ -50,6 +50,6 @@ export type Hour = number;
 
 export type UnknownNumber = number;
 
-export interface DomainModel<T> {
-    formModelFromCandidate(candidate: Candidate<T>): T;
+export interface DomainModel<T,Y> {
+    formModelFromCandidate(candidate: Y): T;
 }

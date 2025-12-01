@@ -1,6 +1,7 @@
 import { Domain } from "domain";
 import { Candidate, ChanceForeast, HourlyNumbers, DomainModel, Hour, UnknownNumber, CHANCE_FORECAST } from "../types";
 import { candidateToType, isNumber, isPositive, isNotNegative, isString, isWithin } from "../utility";
+import { ThreeHourWeatherModel } from "./ThreeHourWeather";
 
 type Fahrenheit = number;
 type Percent = number;
@@ -20,10 +21,11 @@ export interface ThreeHourWeatherOutputModel {
 };
 
 
-export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel> = {
-    formModelFromCandidate(candidate: Candidate<ThreeHourWeatherModel>): ThreeHourWeatherModel {
+export const ThreeHourWeatherOutputModel: DomainModel<ThreeHourWeatherOutputModel, ThreeHourWeatherModel> = {
+    
+    formModelFromCandidate(candidate: ThreeHourWeatherModel): ThreeHourWeatherOutputModel {
         return {
-            temperature: formFahrenheit(candidate.temperature),
+            temperature: candidate.temperature,
             skyCover: formPercent(candidate.skyCover),
             wind: formAirMilesPerHour(candidate.wind),
             humidity: formPercent(candidate.humidity),
@@ -32,13 +34,11 @@ export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel> = {
             snow: formChanceForecast(candidate.snow),
             thunder: formChanceForecast(candidate.thunder),
             hour: formHour(candidate.hour)
-       ,
-     };
+     }
 
 
         function formChanceForecast(candidate: unknown): ChanceForeast {
             return candidateToType<ChanceForeast>(candidate, [isString, isChanceForecastValue]);
-
         }
 
         function formFahrenheit(candidate: unknown): Fahrenheit {

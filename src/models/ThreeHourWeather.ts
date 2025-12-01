@@ -20,7 +20,7 @@ export interface ThreeHourWeatherModel {
 };
 
 
-export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel> = {
+export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel,Candidate<ThreeHourWeatherModel>> = {
     formModelFromCandidate(candidate: Candidate<ThreeHourWeatherModel>): ThreeHourWeatherModel {
         return {
             temperature: formFahrenheit(candidate.temperature),

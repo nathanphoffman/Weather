@@ -1,15 +1,17 @@
 // https://forecast.weather.gov/MapClick.php?lat=40.1852&lon=-75.538&lg=english&&FcstType=digital
 
-import { convertNOAAChancesToAverageMagnitude } from "./src/calculations";
-import { getChosenLocation } from "./src/config";
+import { convertNOAAChancesToAverageMagnitude, getMagnitude, getRealFeelTemperature, getStormRating } from "./src/calculations";
+import { getChosenLocation, HumidityRanges, WindRanges } from "./src/config";
 //import { getWeatherLine } from "./src/console";
 import info from "./src/info";
 import { callOut } from "./src/scraper";
 import { ThreeHourWeatherModel } from "./src/models/ThreeHourWeather";
-import { getDayOfTheWeek, militaryHourToRegularHour } from "./src/utility";
+import { getAverage, getDayOfTheWeek, militaryHourToRegularHour } from "./src/utility";
 
-import { printTable, Table }  from 'console-table-printer';
+import { printTable, Table } from 'console-table-printer';
 import { ChanceForeast } from "./src/types";
+import { getPostfix, getWithColor } from "./src/postfix";
+import { getHappyFaceFromMagnitude, getRealFeelMagnitude, getStormMagnitude } from "./src/color";
 
 //import './extensions.ts';
 
@@ -48,7 +50,7 @@ async function run() {
     //const sleetRow = 16;
 
     const allDays = getRows(1).filter(x => x.toUpperCase() !== 'DATE');
-    const uniqueDays = allDays.reduce((a,b)=>!a.includes(b) ? [...a,b] : a,[]);
+    const uniqueDays = allDays.reduce((a, b) => !a.includes(b) ? [...a, b] : a, []);
     const allHours = getRows(2).filter(x => !isNaN(Number(x)));
 
     const temperatureColumns = getRows(3);
@@ -60,124 +62,123 @@ async function run() {
     const thunderColumns = getRows(13);
     const snowColumns = getRows(14);
 
-    const hourlyWeatherRows = allHours.map((hour,i)=>ThreeHourWeatherModel.formModelFromCandidate(({
-                temperature: temperatureColumns[i], 
-                skyCover: skyCoverColumns[i], 
-                wind: windColumns[i], 
-                humidity: humidityColumns[i], 
-                precipChance: precipChanceColumns[i], 
-                rain: rainColumns[i], 
-                snow: snowColumns[i], 
-                thunder: thunderColumns[i], 
-                hour
+    const hourlyWeatherRows = allHours.map((hour, i) => ThreeHourWeatherModel.formModelFromCandidate(({
+        temperature: temperatureColumns[i],
+        skyCover: skyCoverColumns[i],
+        wind: windColumns[i],
+        humidity: humidityColumns[i],
+        precipChance: precipChanceColumns[i],
+        rain: rainColumns[i],
+        snow: snowColumns[i],
+        thunder: thunderColumns[i],
+        hour
     })));
 
     const hourlyWeatherRowsGroupsOf3 = splitBy3(hourlyWeatherRows);
     console.log(hourlyWeatherRowsGroupsOf3);
 
-    const averagedThreeHourWeather = hourlyWeatherRowsGroupsOf3.map((threeHours)=>{
+    const weatherLines = hourlyWeatherRowsGroupsOf3.map((threeHours) => {
         const middleHour = threeHours[1].hour;
-        
-        
-        const threeHourWeather: ThreeHourWeatherModel = {
-            hour: militaryHourToRegularHour(middleHour)
-        };
+        const militaryTime = militaryHourToRegularHour(middleHour);
 
-        
-        return 
-
-
-        /*
-
-    const humidityMagnitude = getMagnitude(getAverage(...humidity), HumidityRanges);
-    const windMagnitude = getMagnitude(getAverage(...wind), WindRanges);
-
-    const thunderMagnitude = thunder;
-    const rainMagnitude = rain;
-    const snowMagnitude = snow;
-
-    const humidityPostFix = getPostfix(humidityMagnitude, "H");
-    const windPostFix = getPostfix(windMagnitude, "W");
-    const thunderPostFix = getPostfix(thunderMagnitude, "T");
-
-    const hour = getAverage(...hours);
-    const averageSkyCover = getAverage(...skyCover);
-
-    const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover, hour);
-    const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
-
-    const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature); 
-    const stormMagnitude = getStormMagnitude(stormRating);
-    const happyFace = getHappyFaceFromMagnitude(humidityMagnitude, realFeelMagnitude, stormMagnitude);
-
-    const weatherLine = `${getWithColor(realFeelMagnitude, String(realFeelTemperature))}${humidityPostFix} ${getWithColor(stormMagnitude, String(stormRating))}${windPostFix}${thunderPostFix} ${happyFace}`;
-    return weatherLine;
-
-        */
+        const humidity = threeHours.map(x => x.humidity);
+        const wind = threeHours.map(x => x.wind);
+        const thunder = threeHours.map(x => x.thunder);
+        const rain = threeHours.map(x => x.rain);
+        const snow = threeHours.map(x => x.snow);
+        const skyCover = threeHours.map(x => x.skyCover);
+        const temperature = threeHours.map(x => x.temperature);
+        const precipChance = threeHours.map(x => x.precipChance);
 
 
+        // Magnitudes
+        const humidityMagnitude = getMagnitude(getAverage(...humidity), HumidityRanges);
+        const windMagnitude = getMagnitude(getAverage(...wind), WindRanges);
+        const thunderMagnitude = convertNOAAChancesToAverageMagnitude(...thunder);
+        const rainMagnitude = convertNOAAChancesToAverageMagnitude(...rain);
+        const snowMagnitude = convertNOAAChancesToAverageMagnitude(...snow);
 
-    })
+
+        const humidityPostFix = getPostfix(humidityMagnitude, "H");
+        const windPostFix = getPostfix(windMagnitude, "W");
+        const thunderPostFix = getPostfix(thunderMagnitude, "T");
+
+        const averageSkyCover = getAverage(...skyCover);
 
 
+        const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover, middleHour);
+        const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
 
-/*
-    let day = 0;
-    let days : string[] = [];
+        const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature); 
+        const stormMagnitude = getStormMagnitude(stormRating);
+        const happyFace = getHappyFaceFromMagnitude(humidityMagnitude, realFeelMagnitude, stormMagnitude);
 
-    const weatherTable = new Table();
-    const obj : [][] = [];
-    //p.addRow({ description: 'red wine', value: 10.212 }, { color: 'red' });
-    //p.addRow({ description: 'green gemuse', value: 20.0 }, { color: 'green' });
+        const weatherLine = `${getWithColor(realFeelMagnitude, String(realFeelTemperature))}${humidityPostFix} ${getWithColor(stormMagnitude, String(stormRating))}${windPostFix}${thunderPostFix} ${happyFace}`;
+        return weatherLine;
 
-    let currentDay = '';
-    for (let i = 0; i < 48; i++) {
-
-        const middleHourOfThree = Number(hours_3[i][1]);
-
-        if (i === 0) {
-            const uniqueDay = uniqueDays[day++];
-            currentDay = `${uniqueDay} Today:`;
-        }
-        else if (middleHourOfThree <= 2 || middleHourOfThree === 24) {
-            const uniqueDay = uniqueDays[day++];
-            currentDay = `${uniqueDay} ${getDayOfTheWeek(String(uniqueDay))}:`;
-        }
-
-        const hour = militaryHourToRegularHour(middleHourOfThree);
-        const weather = getWeatherLine(
-            {
-                temperatures: temperatures_3[i], 
-                skyCover: skyCover_3[i], 
-                winds: winds_3[i], 
-                humidity: humidity_3[i], 
-                precipChance: precipChance_3[i], 
-                rain: rain_3[i], 
-                snow: snow_3[i], 
-                thunder: thunder_3[i], 
-                hours: hours_3[i]
-            });
-        
-        if(!obj[currentDay]) obj[currentDay] = [];
-        obj[currentDay].push(`${hour}: ${weather}`);
-    }
-
-    let arr : any = [];
-
-    // this unwinds the seperate arrays of days into an array of objects with days as the keys
-    Object.keys(obj).map((day)=>{
-        obj[day].forEach((x,i)=>{
-            const newData = {[day]:x};
-            if(!arr[i]) arr.push(newData);
-            else arr[i] = {...arr[i], ...newData};
-        });
     });
-
-    arr.forEach(a=>weatherTable.addRow(a))
     
-    weatherTable.printTable();
-    info.printInfo();
-    */
+    console.log(weatherLines);
+
+
+
+    /*
+        let day = 0;
+        let days : string[] = [];
+    
+        const weatherTable = new Table();
+        const obj : [][] = [];
+        //p.addRow({ description: 'red wine', value: 10.212 }, { color: 'red' });
+        //p.addRow({ description: 'green gemuse', value: 20.0 }, { color: 'green' });
+    
+        let currentDay = '';
+        for (let i = 0; i < 48; i++) {
+    
+            const middleHourOfThree = Number(hours_3[i][1]);
+    
+            if (i === 0) {
+                const uniqueDay = uniqueDays[day++];
+                currentDay = `${uniqueDay} Today:`;
+            }
+            else if (middleHourOfThree <= 2 || middleHourOfThree === 24) {
+                const uniqueDay = uniqueDays[day++];
+                currentDay = `${uniqueDay} ${getDayOfTheWeek(String(uniqueDay))}:`;
+            }
+    
+            const hour = militaryHourToRegularHour(middleHourOfThree);
+            const weather = getWeatherLine(
+                {
+                    temperatures: temperatures_3[i], 
+                    skyCover: skyCover_3[i], 
+                    winds: winds_3[i], 
+                    humidity: humidity_3[i], 
+                    precipChance: precipChance_3[i], 
+                    rain: rain_3[i], 
+                    snow: snow_3[i], 
+                    thunder: thunder_3[i], 
+                    hours: hours_3[i]
+                });
+            
+            if(!obj[currentDay]) obj[currentDay] = [];
+            obj[currentDay].push(`${hour}: ${weather}`);
+        }
+    
+        let arr : any = [];
+    
+        // this unwinds the seperate arrays of days into an array of objects with days as the keys
+        Object.keys(obj).map((day)=>{
+            obj[day].forEach((x,i)=>{
+                const newData = {[day]:x};
+                if(!arr[i]) arr.push(newData);
+                else arr[i] = {...arr[i], ...newData};
+            });
+        });
+    
+        arr.forEach(a=>weatherTable.addRow(a))
+        
+        weatherTable.printTable();
+        info.printInfo();
+        */
 
 }
 
