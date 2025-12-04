@@ -1,6 +1,5 @@
-import { Domain } from "domain";
-import { Candidate, ChanceForeast, HourlyNumbers, DomainModel, Hour, UnknownNumber, CHANCE_FORECAST } from "../types";
-import { candidateToType, isNumber, isPositive, isNotNegative, isString, isWithin } from "../utility";
+import { Candidate, ChanceForeast, DomainModel, Hour,  CHANCE_FORECAST } from "../types";
+import { candidateToType, isNumber, isNotNegative, isString } from "../utility";
 
 type Fahrenheit = number;
 type Percent = number;
@@ -18,7 +17,6 @@ export interface ThreeHourWeatherModel {
     thunder: ChanceForeast,
     hour: Hour  // use a range comparison something fancy like IntRange<>
 };
-
 
 export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel,Candidate<ThreeHourWeatherModel>> = {
     formModelFromCandidate(candidate: Candidate<ThreeHourWeatherModel>): ThreeHourWeatherModel {
@@ -38,7 +36,6 @@ export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel,Candidate<
 
         function formChanceForecast(candidate: unknown): ChanceForeast {
             return candidateToType<ChanceForeast>(candidate, [isString, isChanceForecastValue]);
-
         }
 
         function formFahrenheit(candidate: unknown): Fahrenheit {
@@ -86,12 +83,3 @@ export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel,Candidate<
 
 
 }
-/*
-class ThreeHourWeather implements DomainModel<ThreeHourWeatherModel> {
-    formModelFromCandidate(candidate: Candidate<ThreeHourWeatherModel>): ThreeHourWeatherModel {
-        
-    }
-
-
-} 
-    */
