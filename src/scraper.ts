@@ -41,8 +41,8 @@ export async function callOut(page: number) {
             const row1Cells = [...row1.querySelectorAll('td > font > b')];
             const row2Cells = [...row2.querySelectorAll('td > font > b')];
 
-            const row1Content = row1Cells.map(x => x.textContent);
-            const row2Content = row2Cells.map(x => x.textContent);
+            const row1Content = row1Cells.map(x => String(x.textContent));
+            const row2Content = row2Cells.map(x => String(x.textContent));
 
             return [...row1Content, ...row2Content];
         }

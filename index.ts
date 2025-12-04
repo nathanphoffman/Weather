@@ -50,7 +50,7 @@ async function run() {
     //const sleetRow = 16;
 
     const allDays = getRows(1).filter(x => x.toUpperCase() !== 'DATE');
-    const uniqueDays = allDays.reduce((a, b) => !a.includes(b) ? [...a, b] : a, []);
+    const uniqueDays = allDays.reduce((a, b) => !a.includes(b) ? [...a, b] : a, [] as string[]);
     const allHours = getRows(2).filter(x => !isNaN(Number(x)));
 
     const temperatureColumns = getRows(3);
@@ -109,78 +109,111 @@ async function run() {
         const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover, middleHour);
         const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
 
-        const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature); 
+        const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature);
         const stormMagnitude = getStormMagnitude(stormRating);
         const happyFace = getHappyFaceFromMagnitude(humidityMagnitude, realFeelMagnitude, stormMagnitude);
 
         const weatherLine = `${getWithColor(realFeelMagnitude, String(realFeelTemperature))}${humidityPostFix} ${getWithColor(stormMagnitude, String(stormRating))}${windPostFix}${thunderPostFix} ${happyFace}`;
-        return weatherLine;
+        return {
+            middleHour,
+            day: null,
+            weatherLine
+        };
 
     });
-    
+
     console.log(weatherLines);
+
+    let currentDay = uniqueDays[0];
+    const obj: string[][] = [];
+    obj[currentDay] = [];
+    let dayTracker = 0;
+
+    weatherLines.forEach(({ middleHour, weatherLine }, i, arr) => {
+
+        const prevMiddleHour = i === 0 ? 0 : arr[i - 1].middleHour;
+
+        if (prevMiddleHour > middleHour) { 
+            currentDay = uniqueDays[++dayTracker]; 
+            obj[currentDay] = []
+        }
+        
+        obj[currentDay].push(`${middleHour}: ${weatherLine}`);
+
+    });
+
+    const arr = [];
+
+    // this unwinds the seperate arrays of days into an array of objects with days as the keys
+    Object.keys(obj).map((day) => {
+        obj[day].forEach((x, i) => {
+            const newData = { [day]: x };
+            if (!arr[i]) arr.push(newData);
+            else arr[i] = { ...arr[i], ...newData };
+        });
+    });
+
+    const weatherTable = new Table();
+
+    arr.forEach(a => weatherTable.addRow(a))
+
+    weatherTable.printTable();
+    info.printInfo();
+
 
 
 
     /*
+    
+    
+                const middleHourOfThree = Number(hours_3[i][1]);
+        
+                if (i === 0) {
+                    const uniqueDay = uniqueDays[day++];
+                    currentDay = `${uniqueDay} Today:`;
+                }
+                else if (middleHourOfThree <= 2 || middleHourOfThree === 24) {
+                    const uniqueDay = uniqueDays[day++];
+                    currentDay = `${uniqueDay} ${getDayOfTheWeek(String(uniqueDay))}:`;
+                }
+        
+    
+    */
+
+    /*
+    
         let day = 0;
-        let days : string[] = [];
+        let days: string[] = [];
     
         const weatherTable = new Table();
-        const obj : [][] = [];
-        //p.addRow({ description: 'red wine', value: 10.212 }, { color: 'red' });
-        //p.addRow({ description: 'green gemuse', value: 20.0 }, { color: 'green' });
+        const obj: [][] = [];
     
         let currentDay = '';
         for (let i = 0; i < 48; i++) {
     
-            const middleHourOfThree = Number(hours_3[i][1]);
-    
-            if (i === 0) {
-                const uniqueDay = uniqueDays[day++];
-                currentDay = `${uniqueDay} Today:`;
-            }
-            else if (middleHourOfThree <= 2 || middleHourOfThree === 24) {
-                const uniqueDay = uniqueDays[day++];
-                currentDay = `${uniqueDay} ${getDayOfTheWeek(String(uniqueDay))}:`;
-            }
-    
-            const hour = militaryHourToRegularHour(middleHourOfThree);
-            const weather = getWeatherLine(
-                {
-                    temperatures: temperatures_3[i], 
-                    skyCover: skyCover_3[i], 
-                    winds: winds_3[i], 
-                    humidity: humidity_3[i], 
-                    precipChance: precipChance_3[i], 
-                    rain: rain_3[i], 
-                    snow: snow_3[i], 
-                    thunder: thunder_3[i], 
-                    hours: hours_3[i]
-                });
-            
-            if(!obj[currentDay]) obj[currentDay] = [];
+            if (!obj[currentDay]) obj[currentDay] = [];
             obj[currentDay].push(`${hour}: ${weather}`);
         }
     
-        let arr : any = [];
+        let arr: any = [];
     
         // this unwinds the seperate arrays of days into an array of objects with days as the keys
-        Object.keys(obj).map((day)=>{
-            obj[day].forEach((x,i)=>{
-                const newData = {[day]:x};
-                if(!arr[i]) arr.push(newData);
-                else arr[i] = {...arr[i], ...newData};
+        Object.keys(obj).map((day) => {
+            obj[day].forEach((x, i) => {
+                const newData = { [day]: x };
+                if (!arr[i]) arr.push(newData);
+                else arr[i] = { ...arr[i], ...newData };
             });
         });
     
-        arr.forEach(a=>weatherTable.addRow(a))
-        
+        arr.forEach(a => weatherTable.addRow(a))
+    
         weatherTable.printTable();
         info.printInfo();
-        */
-
+    
+    */
 }
+
 
 (async function () {
     await run();
