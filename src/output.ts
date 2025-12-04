@@ -49,12 +49,12 @@ export async function getParseScrapedData() {
 
 }
 
-export function splitBy3<T>(arr: T[], prev?: T[][]): T[][] {
+export function splitIntoGroupsOf3<T>(arr: T[], prev?: T[][]): T[][] {
     const deepClone = [...arr];
     const take3 = deepClone.splice(0, 3);
     if (arr.length < 3) return prev;
-    else if (!prev || prev.length === 0) return splitBy3(deepClone, [take3]);
-    else if (prev && prev.length > 0 && arr.length > 2) return splitBy3(deepClone, [...prev, take3]);
+    else if (!prev || prev.length === 0) return splitIntoGroupsOf3(deepClone, [take3]);
+    else if (prev && prev.length > 0 && arr.length > 2) return splitIntoGroupsOf3(deepClone, [...prev, take3]);
 }
 
 export function getWeatherLines(hourlyWeatherRowsGroupsOf3) {
