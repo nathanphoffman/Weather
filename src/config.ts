@@ -39,10 +39,10 @@ const LESS = -1 as const;
 const MORE = -1 as const;
 
 export const HumidityRanges: MagnitudeRange = {
-    0: [LESS, 47],
-    1: [48, 64],
-    2: [65, 81],
-    3: [82, 96],
+    0: [LESS, 55],
+    1: [56, 72],
+    2: [73, 84],
+    3: [85, 96],
     4: [97, MORE]
 } as const;
 
