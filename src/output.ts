@@ -1,5 +1,5 @@
-import { convertNOAAChancesToAverageMagnitude, getMagnitude, getRealFeelTemperature, getStormRating } from "./calculations";
-import { getHappyFaceFromMagnitude, getRealFeelMagnitude, getStormMagnitude } from "./color";
+import { convertNOAAChancesToAverageMagnitude, getMagnitude, getRealFeelTemperature, getStormRating, isAnyTemperatureFreezing } from "./calculations";
+import { getFreezeIconFromTemperatures, getHappyFaceFromMagnitude, getRealFeelMagnitude, getStormMagnitude, underline } from "./color";
 import { HumidityRanges, WindRanges } from "./config";
 import { ThreeHourWeatherModel } from "./models/ThreeHourWeather";
 import { getPostfix, getWithColor } from "./postfix";
@@ -85,16 +85,15 @@ export function getWeatherLines(hourlyWeatherRowsGroupsOf3) {
         const thunderPostFix = getPostfix(thunderMagnitude, "T");
 
         const averageSkyCover = getAverage(...skyCover);
-
-
         const realFeelTemperature = getRealFeelTemperature(getAverage(...temperature), humidityMagnitude, windMagnitude, averageSkyCover, middleHour);
         const stormRating = getStormRating(averageSkyCover, getAverage(...precipChance), rainMagnitude, snowMagnitude, windMagnitude, thunderMagnitude);
 
         const realFeelMagnitude = getRealFeelMagnitude(realFeelTemperature);
         const stormMagnitude = getStormMagnitude(stormRating);
         const happyFace = getHappyFaceFromMagnitude(humidityMagnitude, realFeelMagnitude, stormMagnitude);
+        const freezeIcon = getFreezeIconFromTemperatures(...temperature);
 
-        const weatherLine = `${getWithColor(realFeelMagnitude, String(realFeelTemperature))}${humidityPostFix} ${getWithColor(stormMagnitude, String(stormRating))}${windPostFix}${thunderPostFix} ${happyFace}`;
+        const weatherLine = `${getWithColor(realFeelMagnitude, String(realFeelTemperature))}${humidityPostFix} ${getWithColor(stormMagnitude, String(stormRating))}${windPostFix}${thunderPostFix} ${happyFace}${freezeIcon}`;
 
         return {
             middleHour,

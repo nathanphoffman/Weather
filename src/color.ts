@@ -30,16 +30,25 @@ export function getStormMagnitude(stormRating: number): Magnitude {
 }
 
 export function color(txt, color) {
-    if(!color) return txt;
-    return `${"\x1b"}[${color}m${txt}${"\x1b"}[0m`
+    if (!color) return txt;
+    return `${"\x1b"}[${color}m${txt}${"\x1b"}[0m`;
+}
+
+export function underline(txt) {
+    return `${"\x1b"}[4m${txt}${"\x1b"}[0m`;
+}
+
+export function getFreezeIconFromTemperatures(...temperatures: string[]) {
+    const freezingTemperatures = temperatures.find(temp => Number(temp) < 33);
+    return freezingTemperatures?.length ?? 0 > 0 ? "🧊" : " ";
 }
 
 export function getHappyFaceFromMagnitude(humidityMagnitude: Magnitude, realFeelMagnitude: Magnitude, stormMagnitude: Magnitude) {
     let sadIndex = 0;
 
-    sadIndex = sadIndex + realFeelMagnitude + stormMagnitude + humidityMagnitude*0.5;
+    sadIndex = sadIndex + realFeelMagnitude + stormMagnitude + humidityMagnitude * 0.5;
 
-    if(sadIndex === 0) return "😎";
-    else if(sadIndex <= 1) return "🙂";
+    if (sadIndex === 0) return "😎";
+    else if (sadIndex <= 1) return "🙂";
     else return " ";
 }
