@@ -52,3 +52,12 @@ export function getHappyFaceFromMagnitude(humidityMagnitude: Magnitude, realFeel
     else if (sadIndex <= 1) return "🙂";
     else return " ";
 }
+/*
+// the purpose of this is to account for burst events like sudden showers followed by clear skies
+// since three hours are normally averaged, this lets us know if there is a lot of deviation between them
+export function getUnstableStormRatingIcon(...stormRatings: string[]) {
+    const freezingTemperatures = temperatures.find(temp=>Number(temp) < 33);
+    return freezingTemperatures?.length ?? 0 > 0;
+    //⚠️
+}
+    */
