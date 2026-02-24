@@ -1,4 +1,12 @@
-import { Magnitude } from "./types";
+import { Magnitude } from "./types/general";
+
+export function splitIntoGroupsOf3<T>(arr: T[], prev?: T[][]): T[][] {
+    const deepClone = [...arr];
+    const take3 = deepClone.splice(0, 3);
+    if (arr.length < 3) return prev;
+    else if (!prev || prev.length === 0) return splitIntoGroupsOf3(deepClone, [take3]);
+    else if (prev && prev.length > 0 && arr.length > 2) return splitIntoGroupsOf3(deepClone, [...prev, take3]);
+}
 
 export function getDayOfTheWeek(day: string) {
     // !! need to fix this as it will not work on january dates
@@ -74,5 +82,3 @@ export function candidateToType<T>(candidate: unknown, validators: ((candidate: 
     }
     else return candidate as T;
 }
-
-//export function formModel()

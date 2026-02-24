@@ -1,5 +1,5 @@
 import { ChanceRanges } from "./config";
-import { Magnitude, MagnitudeRange } from "./types";
+import { Magnitude, MagnitudeRange } from "./types/general";
 import { getAverage } from "./utility";
 
 export function convertNOAAChancesToAverageMagnitude(...chances: string[]): Magnitude {

@@ -1,8 +1,8 @@
 import { convertNOAAChancesToAverageMagnitude, getMagnitude, getRealFeelTemperature, getStormRating, isAnyTemperatureFreezing } from "./calculations";
-import { getFreezeIconFromTemperatures, getHappyFaceFromMagnitude, getRealFeelMagnitude, getStormMagnitude, underline } from "./color";
+import { getFreezeIconFromTemperatures, getHappyFaceFromMagnitude, getRealFeelMagnitude, getStormMagnitude, underline } from "./output/color";
 import { HumidityRanges, WindRanges } from "./config";
-import { ThreeHourWeatherModel } from "./models/ThreeHourWeather";
-import { getPostfix, getWithColor } from "./postfix";
+import { ThreeHourWeatherModel } from "./types/threeHourWeather";
+import { getPostfix, getWithColor } from "./output/postfix";
 import { callOut } from "./scraper";
 import { getAverage, militaryHourToRegularHour } from "./utility";
 
@@ -47,14 +47,6 @@ export async function getParseScrapedData() {
 
     return {hourlyWeatherRows, uniqueDays};
 
-}
-
-export function splitIntoGroupsOf3<T>(arr: T[], prev?: T[][]): T[][] {
-    const deepClone = [...arr];
-    const take3 = deepClone.splice(0, 3);
-    if (arr.length < 3) return prev;
-    else if (!prev || prev.length === 0) return splitIntoGroupsOf3(deepClone, [take3]);
-    else if (prev && prev.length > 0 && arr.length > 2) return splitIntoGroupsOf3(deepClone, [...prev, take3]);
 }
 
 export function getWeatherLines(hourlyWeatherRowsGroupsOf3) {

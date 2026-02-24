@@ -1,5 +1,6 @@
-import { Candidate, ChanceForeast, DomainModel, Hour,  CHANCE_FORECAST } from "../types";
+import { Candidate, ChanceForeast, DomainModel, Hour, CHANCE_FORECAST } from "./general";
 import { candidateToType, isNumber, isNotNegative, isString } from "../utility";
+import { is24OrLess, isAboveAbsoluteZero, isBelowBoiling, isBelowSpeedOfSound, isChanceForecastValue, isNoMoreThan100 } from "./validators";
 
 type Fahrenheit = number;
 type Percent = number;
@@ -18,7 +19,7 @@ export interface ThreeHourWeatherModel {
     hour: Hour  // use a range comparison something fancy like IntRange<>
 };
 
-export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel,Candidate<ThreeHourWeatherModel>> = {
+export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel, Candidate<ThreeHourWeatherModel>> = {
     formModelFromCandidate(candidate: Candidate<ThreeHourWeatherModel>): ThreeHourWeatherModel {
         return {
             temperature: formFahrenheit(candidate.temperature),
@@ -30,9 +31,8 @@ export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel,Candidate<
             snow: formChanceForecast(candidate.snow),
             thunder: formChanceForecast(candidate.thunder),
             hour: formHour(candidate.hour)
-       ,
-     };
-
+            ,
+        };
 
         function formChanceForecast(candidate: unknown): ChanceForeast {
             return candidateToType<ChanceForeast>(candidate, [isString, isChanceForecastValue]);
@@ -53,33 +53,7 @@ export const ThreeHourWeatherModel: DomainModel<ThreeHourWeatherModel,Candidate<
         function formHour(candidate: unknown): Hour {
             return candidateToType<Hour>(candidate, [isNumber, isNotNegative, is24OrLess]);
         }
-
-        function isChanceForecastValue(candidate: unknown) {
-            return CHANCE_FORECAST.includes(String(candidate) as any);
-        }
-
-        function isAboveAbsoluteZero(input: unknown) {
-            return Number(input) > -274;
-        }
-
-        function is24OrLess(input: unknown) {
-            return Number(input) <= 24;
-        }
-
-        function isBelowBoiling(input: unknown) {
-            return Number(input) < 212;
-        }
-
-        function isNoMoreThan100(input: unknown) {
-            return Number(input) <= 100;
-        }
-
-        function isBelowSpeedOfSound(input: unknown) {
-            return Number(input) < 767;
-        }
-
-    },
-
-
-
+    }
 }
+
+

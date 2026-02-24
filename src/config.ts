@@ -1,4 +1,4 @@
-import { MagnitudeRange, RealFeelMin, StormMin } from "./types";
+import { MagnitudeRange, RealFeelMin, StormMin } from "./types/general";
 
 export const latLon = {
     default: [40.1852, -75.538], //royersford

@@ -1,9 +1,9 @@
 // https://forecast.weather.gov/MapClick.php?lat=40.1852&lon=-75.538&lg=english&&FcstType=digital
 
-import info from "./src/info";
-import { getDayOfTheWeek } from "./src/utility";
+import info from "./src/output/info";
+import { getDayOfTheWeek, splitIntoGroupsOf3 } from "./src/utility";
 import { Table } from 'console-table-printer';
-import { getParseScrapedData, getWeatherLines, splitIntoGroupsOf3 } from "./src/output";
+import { getParseScrapedData, getWeatherLines } from "./src/output";
 
 async function run() {
 

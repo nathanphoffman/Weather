@@ -1,5 +1,5 @@
-import { RealFeelPreferences, StormPreferences } from "./config";
-import { Magnitude } from "./types";
+import { RealFeelPreferences, StormPreferences } from "../config";
+import { Magnitude } from "../types/general";
 
 export const BRIGHT = 1 as const;
 export const BLINK = 5 as const;
