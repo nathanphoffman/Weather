@@ -1,9 +1,8 @@
 import axios from "axios";
 import { JSDOM } from "jsdom";
 import { getChosenLocation, getLat, getLatLon, getLon, HEADER_ACCEPT, HEADER_USER_AGENT } from "./config";
+import { ThreeHourWeatherModel } from "./types/threeHourWeather";
 
-
-console.log(`\nWeather from NOAA for ${getChosenLocation()}:\n`);
 
 export async function callOut(page: number) {
 
@@ -48,4 +47,50 @@ export async function callOut(page: number) {
         }
     }
     else return (num: number) => { throw "this function should never be executed"; };
+}
+
+
+export async function getParseScrapedData() {
+
+    console.log(`\nWeather from NOAA for ${getChosenLocation()}:\n`);
+
+    // get the 1st, 2nd, and 3rd weather pages from NOAA
+    const results = await Promise.all([callOut(1), callOut(2), callOut(3)]);
+
+    const getRows1 = results[0];
+    const getRows2 = results[1];
+    const getRows3 = results[2];
+
+    function getRows(row: number) {
+        const rows = [...getRows1(row), ...getRows2(row), ...getRows3(row)];
+        return rows;
+    }
+
+    const allDays = getRows(1).filter(x => x.toUpperCase() !== 'DATE');
+    const uniqueDays = allDays.reduce((a, b) => !a.includes(b) ? [...a, b] : a, [] as string[]);
+    const allHours = getRows(2).filter(x => !isNaN(Number(x)));
+
+    const temperatureColumns = getRows(3);
+    const windColumns = getRows(6);
+    const skyCoverColumns = getRows(9);
+    const precipChanceColumns = getRows(10);
+    const humidityColumns = getRows(11);
+    const rainColumns = getRows(12);
+    const thunderColumns = getRows(13);
+    const snowColumns = getRows(14);
+
+    const hourlyWeatherRows = allHours.map((hour, i) => ThreeHourWeatherModel.formModelFromCandidate(({
+        temperature: temperatureColumns[i],
+        skyCover: skyCoverColumns[i],
+        wind: windColumns[i],
+        humidity: humidityColumns[i],
+        precipChance: precipChanceColumns[i],
+        rain: rainColumns[i],
+        snow: snowColumns[i],
+        thunder: thunderColumns[i],
+        hour
+    })));
+
+    return {hourlyWeatherRows, uniqueDays};
+
 }

@@ -1,6 +1,6 @@
-import { ChanceRanges } from "./config";
-import { Magnitude, MagnitudeRange } from "./types/general";
-import { getAverage } from "./utility";
+import { ChanceRanges } from "../config";
+import { Magnitude, MagnitudeRange } from "../types/general";
+import { getAverage } from "../utility";
 
 export function convertNOAAChancesToAverageMagnitude(...chances: string[]): Magnitude {
     const magnitudes = chances.map((chance) => getMagnitude(chance, ChanceRanges));

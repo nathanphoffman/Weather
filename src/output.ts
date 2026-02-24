@@ -1,53 +1,8 @@
-import { convertNOAAChancesToAverageMagnitude, getMagnitude, getRealFeelTemperature, getStormRating, isAnyTemperatureFreezing } from "./calculations";
+import { convertNOAAChancesToAverageMagnitude, getMagnitude, getRealFeelTemperature, getStormRating, isAnyTemperatureFreezing } from "./output/calculations";
 import { getFreezeIconFromTemperatures, getHappyFaceFromMagnitude, getRealFeelMagnitude, getStormMagnitude, underline } from "./output/color";
 import { HumidityRanges, WindRanges } from "./config";
-import { ThreeHourWeatherModel } from "./types/threeHourWeather";
 import { getPostfix, getWithColor } from "./output/postfix";
-import { callOut } from "./scraper";
 import { getAverage, militaryHourToRegularHour } from "./utility";
-
-export async function getParseScrapedData() {
-
-    // get the 1st, 2nd, and 3rd weather pages from NOAA
-    const results = await Promise.all([callOut(1), callOut(2), callOut(3)]);
-
-    const getRows1 = results[0];
-    const getRows2 = results[1];
-    const getRows3 = results[2];
-
-    function getRows(row: number) {
-        const rows = [...getRows1(row), ...getRows2(row), ...getRows3(row)];
-        return rows;
-    }
-
-    const allDays = getRows(1).filter(x => x.toUpperCase() !== 'DATE');
-    const uniqueDays = allDays.reduce((a, b) => !a.includes(b) ? [...a, b] : a, [] as string[]);
-    const allHours = getRows(2).filter(x => !isNaN(Number(x)));
-
-    const temperatureColumns = getRows(3);
-    const windColumns = getRows(6);
-    const skyCoverColumns = getRows(9);
-    const precipChanceColumns = getRows(10);
-    const humidityColumns = getRows(11);
-    const rainColumns = getRows(12);
-    const thunderColumns = getRows(13);
-    const snowColumns = getRows(14);
-
-    const hourlyWeatherRows = allHours.map((hour, i) => ThreeHourWeatherModel.formModelFromCandidate(({
-        temperature: temperatureColumns[i],
-        skyCover: skyCoverColumns[i],
-        wind: windColumns[i],
-        humidity: humidityColumns[i],
-        precipChance: precipChanceColumns[i],
-        rain: rainColumns[i],
-        snow: snowColumns[i],
-        thunder: thunderColumns[i],
-        hour
-    })));
-
-    return {hourlyWeatherRows, uniqueDays};
-
-}
 
 export function getWeatherLines(hourlyWeatherRowsGroupsOf3) {
 

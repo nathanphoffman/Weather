@@ -3,7 +3,8 @@
 import info from "./src/output/info";
 import { getDayOfTheWeek, splitIntoGroupsOf3 } from "./src/utility";
 import { Table } from 'console-table-printer';
-import { getParseScrapedData, getWeatherLines } from "./src/output";
+import { getWeatherLines } from "./src/output";
+import { getParseScrapedData } from "./src/scraper";
 
 async function run() {
 

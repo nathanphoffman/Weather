@@ -4,9 +4,8 @@ export const latLon = {
     default: [40.1852, -75.538], //royersford
     ny: [40.7198, -73.993], //nyc
     p: [39.99310, -74.78790], //philly
-    cabin: [41.39127,-76.75871],
+    hillsgrove: [41.39127,-76.75871],
     h: [40.2761,-76.8845], //harrisburg
-    j: [39.6794, -78.5220]
 };
 
 export function getChosenLocation() {
@@ -26,7 +25,6 @@ export function getLon() {
     const chosenLatLon = latLon[chosenLocation];
     return chosenLatLon[1];
 }
-
 
 export function getLatLon() {
     const chosenLocation = getChosenLocation();
